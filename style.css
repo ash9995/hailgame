@@ -32,36 +32,35 @@
 body {
     font-family: 'Larken', 'Tajawal', serif;
     direction: rtl;
-    /* تمت إزالة اللون من الخلفية الرئيسية */
+    /* تأكيد إزالة أي لون خلفية من الـ body */
     background-color: transparent; 
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    background-size: cover;
-    background-position: center;
+    margin: 0; /* إزالة الهوامش الافتراضية */
 }
 
-/* خلفية الصورة - A.png */
+/* طبقة الخلفية (الصورة A.png) */
 .background-image {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    /* التأكد من استخدام الصورة A.png */
+    /* التأكد من استخدام الصورة A.png بدون أي لون فوقها */
     background-image: url('b.png'); 
     background-size: cover;
     background-position: center;
-    opacity: 1; /* إعادة الشفافية إلى 1 لعدم إضافة أي طبقة لونية */
-    z-index: -1;
+    z-index: -1; /* إبقاؤها خلف المحتوى */
 }
 
+/* حاوية اللعبة الرئيسية */
 .puzzle-container {
     width: 95%;
-    max-width: 650px; /* المقاس الأقصى للابتوب */
-    background-color: rgba(255, 255, 255, 0.95); /* خلفية بيضاء شفافة لمحتوى اللعبة لقراءة أفضل */
+    max-width: 750px; /* مقاس أقصى مرن لشاشات اللابتوب */
+    background-color: rgba(255, 255, 255, 0.97); /* خلفية بيضاء شفافة جداً لمحتوى اللعبة لقراءة أفضل */
     border-radius: 15px;
     padding: 30px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
@@ -87,6 +86,8 @@ body {
     padding: 5px 15px;
     border-radius: 5px;
     border: 1px solid var(--ui-border-color);
+    flex-grow: 1; /* للسماح بالتوسع على شاشات الجوال */
+    margin: 0 5px;
 }
 
 .level-indicator span, .score-box span {
@@ -184,6 +185,7 @@ body {
     transition: all 0.3s;
     -moz-appearance: textfield;
     appearance: textfield;
+    text-transform: capitalize; /* للتأكد من أن المستخدم يمكنه إدخال حروف كبيرة */
 }
 
 .cell:focus {
@@ -297,97 +299,78 @@ body {
     40%, 80% { transform: translateX(6px); }
 }
 
-/* لتنسيق أرقام المرحلة والنقاط بالخط العربي */
-#current-level, #score, #final-score-display {
-    font-family: 'Byt', sans-serif;
-}
-
 /*
 * --- قسم الاستجابة (Responsive Design) ---
-* (تعديلات خاصة بالشاشات الصغيرة، مثل الجوال)
+* View for Mobile - الشاشات الصغيرة (أقل من 600 بكسل)
 */
 @media (max-width: 600px) {
     
     .puzzle-container {
         width: 100%; 
-        padding: 15px; /* حشو داخلي مناسب */
+        padding: 15px;
     }
     
     .game-header {
-        flex-direction: column;
-        gap: 10px;
+        flex-direction: row; /* إبقاء الترتيب الأفقي لكن بتقسيم مساحة متساوية */
+        gap: 5px;
         margin-bottom: 15px;
     }
 
     .level-indicator, .score-box {
-        font-size: 0.9rem; /* تصغير خط الرؤوس */
+        font-size: 0.9rem;
         padding: 5px 10px;
-        width: 100%;
     }
 
     #main-title {
-        font-size: 2.0rem; /* تصغير العنوان الرئيسي */
+        font-size: 2.0rem;
     }
 
     .subtitle {
-        font-size: 1.2rem; /* تصغير عنوان المرحلة */
+        font-size: 1.2rem;
         margin-bottom: 20px;
-    }
-
-    .word-group {
-        padding: 15px; /* تقليل حشو مجموعة الألغاز */
     }
     
     .clue {
-        font-size: 1.1rem; /* تصغير حجم خط السؤال */
+        font-size: 1.1rem;
         line-height: 1.5;
     }
 
-    /* ** التعديل الحاسم لمربعات الإدخال ** */
+    /* التحكم في مربعات الإدخال على الجوال */
     .inputs {
-        gap: 4px; /* تقليل المسافة بين المربعات */
-        flex-wrap: nowrap; /* منع الالتفاف */
-        /* ** تمكين التمرير الأفقي للألغاز الطويلة على الجوال ** */
-        overflow-x: auto; 
-        justify-content: flex-start; /* تبدأ المربعات من اليمين (في RTL) */
-        padding-bottom: 5px; /* مساحة صغيرة لتجنب قطع شريط التمرير */
-        /* لإخفاء شريط التمرير في بعض المتصفحات */
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
+        gap: 4px;
+        flex-wrap: nowrap;
+        overflow-x: auto; /* تمكين التمرير الأفقي للألغاز الطويلة */
+        justify-content: flex-start;
+        padding-bottom: 5px;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
     }
     
-    /* إخفاء شريط التمرير في Webkit (Chrome, Safari) */
     .inputs::-webkit-scrollbar {
         display: none;
     }
 
 
     .cell {
-        width: 40px; /* تقليل العرض قليلاً */
-        height: 50px; /* تقليل الارتفاع قليلاً */
-        font-size: 20px; /* تصغير حجم الخط داخل المربع */
-        flex-shrink: 0; /* منع المربعات من التقلص تحت ضغط الـ Flex */
-    }
-    
-    .modal-content {
-        padding: 30px;
-    }
-    
-    .modal-content h2 {
-        font-size: 2.5rem;
-    }
-    
-    .btn-hail {
-        font-size: 1.3rem;
-        padding: 10px 25px;
+        width: 40px;
+        height: 50px;
+        font-size: 20px;
+        flex-shrink: 0; 
     }
 }
 
-/* تعديلات للشاشات المتوسطة والكبيرة (التابلت واللابتوب) */
+/* View for Laptop - الشاشات المتوسطة والكبيرة (أكبر من 600 بكسل) */
 @media (min-width: 601px) {
-    /* هنا نستخدم وحدات مرنة مثل % أو rem لضمان الاستجابة بدل الثوابت */
+    /* هذه القيم هي ما يعطي الـ "View for Laptop" */
     .puzzle-container {
-        max-width: 800px; /* زيادة قليلة لعرض اللابتوب */
+        padding: 40px;
+    }
+    .game-header {
+        flex-direction: row;
+    }
+    .level-indicator, .score-box {
+        flex-grow: 0; /* لا تستهلك كل المساحة */
+        width: auto;
     }
     .clue {
         font-size: 1.5rem;
