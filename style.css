@@ -13,13 +13,12 @@
     font-style: normal;
 }
 
-/* --- متغيرات الألوان الجديدة (متناسقة مع الخلفية) --- */
+/* --- متغيرات الألوان (مستخدمة فقط لواجهة اللعبة الأمامية) --- */
 :root {
     --bg-dark-blue: #2E3A4B;    /* اللون الأزرق الداكن من الصورة */
     --accent-orange: #C07B5C;   /* اللون البرتقالي/الترابي من الصورة */
-    --light-cream: #F2EFEA;    /* لون فاتح متناسق للنصوص والخلفيات */
     --text-dark: #1E2733;       /* لون نص أغمق */
-    --ui-border-color: #C07B5C; /* تغيير: لون حدود UI برتقالي/ترابي */
+    --ui-border-color: #C07B5C; /* لون حدود UI برتقالي/ترابي */
     --correct-green: #4CAF50;   /* أخضر للحل الصحيح */
     --incorrect-red: #E74C3C;   /* أحمر للحل الخاطئ */
     --door-color: #CC9A7E;      /* لون الأبواب في الخلفية */
@@ -33,6 +32,7 @@
 body {
     font-family: 'Larken', 'Tajawal', serif;
     direction: rtl;
+    background-color: #f7f7f7; /* خلفية محايدة جداً (أبيض فاتح) لمنع تداخل الألوان مع الصورة */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -52,14 +52,14 @@ body {
     background-image: url('b.png'); 
     background-size: cover;
     background-position: center;
-    opacity: 0.1; /* خففنا الشفافية لكي لا تشتت العين */
+    opacity: 0.8; /* شفافية 0.8 تجعل الصورة واضحة ولكن غير مشتتة */
     z-index: -1;
 }
 
 .puzzle-container {
     width: 95%;
     max-width: 650px;
-    background-color: rgba(255, 255, 255, 0.95); /* خلفية بيضاء شفافة */
+    background-color: rgba(255, 255, 255, 0.95); /* خلفية بيضاء شفافة لمحتوى اللعبة لقراءة أفضل */
     border-radius: 15px;
     padding: 30px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
@@ -81,7 +81,7 @@ body {
     font-family: 'Byt', sans-serif;
     font-size: 1.1rem;
     color: var(--text-dark);
-    background-color: var(--light-cream);
+    background-color: #f0f0f0;
     padding: 5px 15px;
     border-radius: 5px;
     border: 1px solid var(--ui-border-color);
@@ -135,7 +135,7 @@ body {
 
 /* --- تصميم مجموعة الكلمات --- */
 .word-group {
-    background-color: var(--light-cream);
+    background-color: #f7f7f7;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
@@ -371,7 +371,7 @@ body {
     }
 }
 
-/* تعديلات للشاشات الأكبر قليلاً ولكنها لا تزال صغيرة (مثل الأجهزة اللوحية الصغيرة) */
+/* تعديلات للشاشات الأكبر قليلاً (مثل الأجهزة اللوحية الصغيرة) */
 @media (min-width: 601px) and (max-width: 800px) {
     .puzzle-container {
         padding: 25px;
