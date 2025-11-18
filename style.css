@@ -19,7 +19,7 @@
     --accent-orange: #C07B5C;   /* اللون البرتقالي/الترابي من الصورة */
     --light-cream: #F2EFEA;    /* لون فاتح متناسق للنصوص والخلفيات */
     --text-dark: #1E2733;       /* لون نص أغمق */
-    --ui-border-color: #5C6F87; /* لون حدود UI متناسق */
+    --ui-border-color: #C07B5C; /* تغيير: لون حدود UI برتقالي/ترابي */
     --correct-green: #4CAF50;   /* أخضر للحل الصحيح */
     --incorrect-red: #E74C3C;   /* أحمر للحل الخاطئ */
     --door-color: #CC9A7E;      /* لون الأبواب في الخلفية */
@@ -150,7 +150,7 @@ body {
 }
 
 .clue {
-    font-size: 1.4rem; /* الحجم الذي طلبته سابقًا */
+    font-size: 1.4rem; 
     font-family: 'Larken', serif; 
     font-weight: bold;
     color: var(--text-dark);
@@ -268,12 +268,19 @@ body {
     font-size: 1.5rem;
     cursor: pointer;
     border-radius: 5px;
-    transition: background 0.3s, transform 0.2s;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 0 #a8654c; 
 }
 
 .btn-hail:hover {
     background-color: #a8654c;
     transform: translateY(-2px);
+    box-shadow: 0 6px 0 #8d4f3b;
+}
+
+.btn-hail:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #a8654c;
 }
 
 /* --- Animations --- */
@@ -285,8 +292,8 @@ body {
 
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-5px); }
-    40%, 80% { transform: translateX(5px); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
 }
 
 /* لتنسيق أرقام المرحلة والنقاط بالخط العربي */
@@ -301,42 +308,66 @@ body {
 @media (max-width: 600px) {
     
     .puzzle-container {
-        width: 100%; /* تأخذ العرض الكامل تقريباً */
-        padding: 15px; /* تقليل الحشو */
-    }
-
-    #main-title {
-        font-size: 2rem; /* تقليل حجم العنوان الرئيسي */
-    }
-
-    .subtitle {
-        font-size: 1.2rem; /* تقليص بسيط لحجم عنوان المرحلة */
-        margin-bottom: 20px;
-    }
-
-    .clue {
-        font-size: 1.15rem; /* تقليص حجم خط السؤال ليناسب العرض */
-        padding: 5px;
-    }
-
-    .cell {
-        width: 38px; /* تقليل العرض */
-        height: 48px; /* تقليل الارتفاع */
-        font-size: 20px; /* تقليل حجم الخط داخل المربع */
-        gap: 5px; /* تقليل المسافة بين المربعات */
-    }
-
-    .inputs {
-        gap: 4px; /* تقليل المسافة بين مربعات الإدخال */
+        width: 100%; 
+        padding: 10px; /* تقليل الحشو الداخلي أكثر */
+        margin: 10px auto; /* إضافة هوامش علوية وسفلية بسيطة */
     }
     
     .game-header {
-        flex-direction: column; /* ترتيب المرحلة والنقاط عمودياً */
-        gap: 10px;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 15px;
     }
 
     .level-indicator, .score-box {
-        font-size: 1rem;
+        font-size: 0.9rem; /* تصغير الخط في الرؤوس */
+        padding: 4px 10px;
         width: 100%;
+    }
+
+    #main-title {
+        font-size: 1.8rem; /* تصغير العنوان الرئيسي */
+    }
+
+    .subtitle {
+        font-size: 1.1rem; /* تصغير عنوان المرحلة أكثر قليلاً ليناسب الشاشة */
+        margin-bottom: 15px;
+    }
+
+    .word-group {
+        padding: 12px; /* تقليل الحشو في مجموعات الألغاز */
+    }
+    
+    .clue {
+        font-size: 1.05rem; /* تصغير حجم خط السؤال */
+        line-height: 1.5;
+        padding-bottom: 8px;
+    }
+
+    .inputs {
+        gap: 3px; /* تقليل المسافة بين مربعات الإدخال */
+        overflow-x: auto; /* إضافة شريط تمرير أفقي إذا لم تكفِ المربعات */
+        justify-content: flex-start; /* تبدأ المربعات من اليمين (في RTL) */
+        padding-bottom: 5px;
+    }
+
+    .cell {
+        width: 35px; /* تقليل العرض أكثر */
+        height: 45px; /* تقليل الارتفاع أكثر */
+        font-size: 18px; /* تصغير حجم الخط داخل المربع */
+        flex-shrink: 0; /* منع المربعات من التقلص بشكل كبير */
+    }
+    
+    .modal-content {
+        padding: 25px;
+    }
+    
+    .modal-content h2 {
+        font-size: 2rem;
+    }
+    
+    .btn-hail {
+        font-size: 1.2rem;
+        padding: 10px 20px;
     }
 }
