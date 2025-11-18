@@ -1,0 +1,343 @@
+/* --- تحميل الخطوط --- */
+@font-face {
+    font-family: 'Byt';
+    src: url('byt-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Larken';
+    src: url('Larken-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* --- متغيرات الألوان الجديدة (متناسقة مع الخلفية) --- */
+:root {
+    --bg-dark-blue: #2E3A4B;    /* اللون الأزرق الداكن من الصورة */
+    --accent-orange: #C07B5C;   /* اللون البرتقالي/الترابي من الصورة */
+    --light-cream: #F2EFEA;    /* لون فاتح متناسق للنصوص والخلفيات */
+    --text-dark: #1E2733;       /* لون نص أغمق */
+    --ui-border-color: #C07B5C; /* تغيير: لون حدود UI برتقالي/ترابي */
+    --correct-green: #4CAF50;   /* أخضر للحل الصحيح */
+    --incorrect-red: #E74C3C;   /* أحمر للحل الخاطئ */
+    --door-color: #CC9A7E;      /* لون الأبواب في الخلفية */
+}
+
+/* --- أساسيات الصفحة --- */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Larken', 'Tajawal', serif;
+    direction: rtl;
+    color: var(--text-dark); /* تغيير: لون النص الرئيسي داكن ليبرز على الخلفية البيضاء الشفافة */
+    
+    /* إزالة توسيط الـ Flex لتمكين Absolute Positioning للـ container */
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden; /* لمنع شريط التمرير الأفقي من الظهور */
+}
+
+/* الخلفية الثابتة */
+.background-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('b.png'); 
+    background-size: cover;
+    background-position: center center;
+    filter: brightness(0.95); 
+    z-index: -1;
+}
+
+/* حاوية اللعبة الرئيسية */
+.puzzle-container {
+    width: 95%; 
+    max-width: 1042px;
+    
+    /* التغيير المطلوب: أبيض وشبه شفاف */
+    background-color: rgba(255, 255, 255, 0.85); /* أبيض شبه شفاف */
+    border: 3px solid var(--accent-orange); /* حدود برتقالية */
+    
+    border-radius: 20px;
+    padding: 40px; 
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); 
+    text-align: center;
+    
+    z-index: 10; 
+    transition: all 0.3s ease;
+    
+    /* تمكين السحب والتحريك */
+    position: absolute;
+    top: 50%; /* لتوسيط مبدئي */
+    left: 50%; /* لتوسيط مبدئي */
+    transform: translate(-26%, -20%); /* لتوسيط مبدئي */
+    cursor: grab; /* مؤشر يشير إلى إمكانية السحب */
+}
+
+
+/* العنوان الفرعي (لمرحلة اللغز) */
+.subtitle {
+    font-family: 'Byt', serif;
+    color: var(--text-dark); /* تغيير: لون النص داكن */
+    font-size: 1.6rem;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+/* معلومات المرحلة والنقاط */
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--ui-border-color); 
+    color: var(--text-dark); /* تغيير: لون النص داكن */
+}
+
+.level-indicator, .score-box {
+    font-family: 'Byt', sans-serif;
+    font-size: 1.3rem; 
+    color: var(--text-dark); /* تغيير: لون النص داكن */
+    font-weight: bold;
+}
+
+.score-box span {
+    color: var(--accent-orange); 
+    font-weight: 900;
+}
+
+/* شريط التقدم */
+.progress-container {
+    height: 10px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.1); /* شريط تقدم شبه شفاف (فاتح) */
+    border-radius: 5px;
+    margin-bottom: 30px; 
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: var(--correct-green);
+    transition: width 0.4s ease-in-out;
+    border-radius: 5px;
+}
+
+/* شبكة الألغاز (تغيير: ترتيب أفقي) */
+.puzzle-grid {
+    display: flex;
+    flex-direction: row; 
+    flex-wrap: wrap; 
+    gap: 20px; 
+    justify-content: center; 
+}
+
+.word-group {
+    width: calc(50% - 10px); 
+    min-width: 300px; 
+    
+    /* تغيير: خلفية المجموعات أصبحت شفافة خفيفة داكنة لتظهر على الخلفية البيضاء */
+    background-color: rgba(46, 58, 75, 0.05); 
+    border: 1px solid var(--ui-border-color); 
+    padding: 18px; 
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s;
+}
+
+.clue {
+    font-family: 'Byt', serif;
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--text-dark); /* تغيير: لون النص داكن */
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+/* تصميم مربعات الإدخال */
+.inputs {
+    display: flex;
+    justify-content: center;
+    gap: 7px; 
+    direction: rtl; 
+}
+
+.cell {
+    width: 45px;
+    height: 55px; 
+    text-align: center;
+    font-family: 'Byt', sans-serif; 
+    font-size: 24px; 
+    color: var(--text-dark); 
+    background-color: #ffffff; /* أبيض صلب */
+    border: 3px solid var(--ui-border-color); 
+    border-radius: 6px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+    text-transform: uppercase;
+}
+
+.cell:focus {
+    outline: none;
+    border-color: var(--accent-orange);
+    background-color: #ffffff; 
+    transform: scale(1.05);
+}
+
+/* حالات الإجابة */
+.cell.correct {
+    background-color: var(--correct-green);
+    color: #fff;
+    border-color: var(--correct-green);
+    animation: pop 0.3s ease;
+}
+
+.cell.incorrect {
+    background-color: var(--incorrect-red);
+    color: #fff;
+    border-color: var(--incorrect-red);
+    animation: shake 0.5s;
+}
+
+/* حالة الحل الكامل للمجموعة */
+.word-group.solved {
+    border-color: var(--correct-green);
+    background-color: rgba(76, 175, 80, 0.05); /* أخضر خفيف جداً على الخلفية البيضاء */
+}
+
+/* --- تصميم المودال (النافذة المنبثقة) --- */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: #ffffff; 
+    padding: 50px;
+    border-radius: 12px;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+}
+
+.modal-content h2 {
+    font-family: 'Byt', sans-serif;
+    color: var(--bg-dark-blue);
+    font-size: 3.5rem;
+    margin-bottom: 10px;
+}
+
+.modal-content p, .modal-content .final-score {
+    font-size: 1.3rem;
+    margin-bottom: 25px;
+    color: var(--text-dark);
+}
+
+.stars {
+    font-size: 2.5rem;
+    margin-bottom: 25px;
+    color: gold;
+    text-shadow: 1px 1px 0 #b58900;
+}
+
+.btn-hail {
+    background-color: var(--accent-orange);
+    color: white;
+    border: none;
+    padding: 15px 35px;
+    font-family: 'Byt', sans-serif;
+    font-size: 1.6rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 0 #a8654c; 
+}
+
+.btn-hail:hover {
+    background-color: #a8654c;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #8d4f3b;
+}
+
+.btn-hail:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #a8654c;
+}
+
+/* --- Animations --- */
+@keyframes pop {
+    0% { transform: scale(0.9); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+/* استجابة الشاشة الصغيرة */
+@media (max-width: 950px) {
+    /* على الشاشات المتوسطة، الألغاز تأخذ العرض الكامل وتعود للترتيب العمودي */
+    .puzzle-grid {
+        flex-direction: column; 
+    }
+    .word-group {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 600px) {
+    .puzzle-container {
+        /* إزالة التحويل الأولي للسحب من الشاشات الصغيرة لجعلها مرئية بالكامل */
+        transform: none; 
+        top: auto;
+        left: auto;
+        position: relative;
+        margin: 15px auto;
+        cursor: default;
+    }
+    body {
+        padding: 15px;
+        display: block; /* إعادة التموضع العادي */
+    }
+
+    .puzzle-container {
+        padding: 25px;
+        border-radius: 10px;
+    }
+
+    .cell {
+        width: 38px;
+        height: 48px;
+        font-size: 20px;
+    }
+    
+    .btn-hail {
+        font-size: 1.3rem;
+        padding: 10px 25px;
+    }
+}
