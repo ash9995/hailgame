@@ -32,7 +32,8 @@
 body {
     font-family: 'Larken', 'Tajawal', serif;
     direction: rtl;
-    background-color: #f7f7f7; /* خلفية محايدة جداً (أبيض فاتح) لمنع تداخل الألوان مع الصورة */
+    /* تمت إزالة اللون من الخلفية الرئيسية */
+    background-color: transparent; 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -42,23 +43,24 @@ body {
     background-position: center;
 }
 
-/* خلفية الصورة */
+/* خلفية الصورة - A.png */
 .background-image {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+    /* التأكد من استخدام الصورة A.png */
     background-image: url('b.png'); 
     background-size: cover;
     background-position: center;
-    opacity: 0.8; /* شفافية 0.8 تجعل الصورة واضحة ولكن غير مشتتة */
+    opacity: 1; /* إعادة الشفافية إلى 1 لعدم إضافة أي طبقة لونية */
     z-index: -1;
 }
 
 .puzzle-container {
     width: 95%;
-    max-width: 650px;
+    max-width: 650px; /* المقاس الأقصى للابتوب */
     background-color: rgba(255, 255, 255, 0.95); /* خلفية بيضاء شفافة لمحتوى اللعبة لقراءة أفضل */
     border-radius: 15px;
     padding: 30px;
@@ -345,10 +347,20 @@ body {
     .inputs {
         gap: 4px; /* تقليل المسافة بين المربعات */
         flex-wrap: nowrap; /* منع الالتفاف */
-        overflow-x: auto; /* ** تمكين التمرير الأفقي للألغاز الطويلة ** */
+        /* ** تمكين التمرير الأفقي للألغاز الطويلة على الجوال ** */
+        overflow-x: auto; 
         justify-content: flex-start; /* تبدأ المربعات من اليمين (في RTL) */
         padding-bottom: 5px; /* مساحة صغيرة لتجنب قطع شريط التمرير */
+        /* لإخفاء شريط التمرير في بعض المتصفحات */
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
     }
+    
+    /* إخفاء شريط التمرير في Webkit (Chrome, Safari) */
+    .inputs::-webkit-scrollbar {
+        display: none;
+    }
+
 
     .cell {
         width: 40px; /* تقليل العرض قليلاً */
@@ -371,20 +383,21 @@ body {
     }
 }
 
-/* تعديلات للشاشات الأكبر قليلاً (مثل الأجهزة اللوحية الصغيرة) */
-@media (min-width: 601px) and (max-width: 800px) {
+/* تعديلات للشاشات المتوسطة والكبيرة (التابلت واللابتوب) */
+@media (min-width: 601px) {
+    /* هنا نستخدم وحدات مرنة مثل % أو rem لضمان الاستجابة بدل الثوابت */
     .puzzle-container {
-        padding: 25px;
+        max-width: 800px; /* زيادة قليلة لعرض اللابتوب */
     }
     .clue {
-        font-size: 1.3rem;
+        font-size: 1.5rem;
     }
     .inputs {
-        gap: 6px;
+        gap: 10px;
     }
     .cell {
-        width: 45px;
-        height: 55px;
-        font-size: 22px;
+        width: 50px;
+        height: 60px;
+        font-size: 26px;
     }
 }
