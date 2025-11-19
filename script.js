@@ -4,7 +4,7 @@ const levels = [
         title: "المرحلة ١: معالم حائل التاريخية",
         puzzles: [
             { answer: "القشلة", clue: "١. قصر تاريخي شهير في وسط مدينة حائل (٦ حروف)" },
-            { answer: "أعيرف", clue: "٢. قلعة وجبل يطل على حائل (٥ حروف)" },
+            { answer: "اعيرف", clue: "٢. قلعة وجبل يطل على حائل (٥ حروف)" },
             { answer: "حاتم", clue: "٣. رمز الكرم العربي الذي ارتبط اسمه بحائل (٤ حروف)" },
             { answer: "جبة", clue: "٤. مدينة تاريخية تشتهر بالنقوش (٣ حروف)" }
         ]
@@ -23,18 +23,8 @@ const levels = [
         puzzles: [
             { answer: "كبيبة", clue: "١. أكلة حائلية شهيرة تُعمل بورق العنب (٥ حروف)" },
             { answer: "دلة", clue: "٢. رمز للضيافة وتقديم القهوة (٣ حروف)" },
-            { answer: "برزان", clue: "٣. حي تاريخي قديم في حائل (٥ حروف)" },
+            { answer: "برزان", clue: "٣. قصر وحي تاريخي قديم في حائل (٥ حروف)" },
             { answer: "فيد", clue: "٤. مدينة تاريخية قديمة تقع على طريق الحج (٣ حروف)" }
-        ]
-    },
-    { // المرحلة الرابعة: دور بيوت الثقافة
-        title: "المرحلة ٤: دور بيوت الثقافة",
-        puzzles: [
-            { answer: "مواهب", clue: "١. الهدف الأهم للمراكز الثقافية هو اكتشاف وصقل ... الشباب (٥ حروف)" },
-            { answer: "ورشة", clue: "٢. طريقة تدريب عملية قصيرة ومكثفة لتعليم مهارة جديدة (٤ حروف)" },
-            { answer: "أطفال", clue: "٣. الفئة العمرية التي تُخصص لها برامج لتنمية الخيال والمهارات الحركية (٥ حروف)" }, // تمت إضافة الفاصلة هنا
-            { answer: "تراث", clue: "٤. ما تحافظ عليه المراكز الثقافية من عادات وفنون الماضي (٤ حروف)" }, // تمت إضافة الفاصلة هنا
-            { answer: "السياحة", clue: "٥. بيوت الثقافة تسهم في تعزيز .... لجذب الزوار الأجانب والمحليين (٧ حروف)" }
         ]
     }
 ];
@@ -47,34 +37,25 @@ document.addEventListener('DOMContentLoaded', () => {
     loadLevel(currentLevelIndex);
 
     // زر الانتقال للمرحلة التالية
-    const nextBtn = document.getElementById('next-level-btn');
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            document.getElementById('victory-modal').classList.add('hidden');
-            currentLevelIndex++;
-            
-            if (currentLevelIndex < levels.length) {
-                loadLevel(currentLevelIndex);
-            } else {
-                showFinalScreen();
-            }
-        });
-    }
+    document.getElementById('next-level-btn').addEventListener('click', () => {
+        document.getElementById('victory-modal').classList.add('hidden');
+        currentLevelIndex++;
+        
+        if (currentLevelIndex < levels.length) {
+            loadLevel(currentLevelIndex);
+        } else {
+            showFinalScreen();
+        }
+    });
 });
 
 function loadLevel(index) {
     const gameArea = document.getElementById('game-area');
-    if (!gameArea) return;
-
     const levelData = levels[index];
     
     // تحديث واجهة المستخدم
-    const currentLevelEl = document.getElementById('current-level');
-    const levelTitleEl = document.getElementById('level-title');
-    
-    if (currentLevelEl) currentLevelEl.textContent = toArabicNumerals(index + 1);
-    if (levelTitleEl) levelTitleEl.textContent = levelData.title;
-    
+    document.getElementById('current-level').textContent = toArabicNumerals(index + 1);
+    document.getElementById('level-title').textContent = levelData.title;
     updateProgressBar();
 
     // تنظيف المنطقة
@@ -142,14 +123,14 @@ function attachLogicToGroup(group, answer) {
                 inputs.forEach(cell => cell.classList.remove('correct', 'incorrect'));
             }
             
-            // التنقل بالأسهم
-            if (e.key === 'ArrowLeft' && index < inputs.length - 1) {
+            // التنقل بالأسهم (يمين ويسار)
+            if (e.key === 'ArrowLeft' && index < inputs.length - 1) { // السهم الأيسر ينتقل لليمين في RTL
                 inputs[index + 1].focus();
-                e.preventDefault();
+                e.preventDefault(); // منع سلوك المتصفح الافتراضي
             }
-            if (e.key === 'ArrowRight' && index > 0) {
+            if (e.key === 'ArrowRight' && index > 0) { // السهم الأيمن ينتقل لليسار في RTL
                 inputs[index - 1].focus();
-                e.preventDefault();
+                e.preventDefault(); // منع سلوك المتصفح الافتراضي
             }
         });
 
@@ -168,8 +149,7 @@ function checkOnePuzzle(group, inputs, correctAnswer) {
 
     if (!allFilled) return;
 
-    // تنظيف النصوص للمقارنة
-    if (userAnswer.replace(/\s/g, '') === correctAnswer.replace(/\s/g, '')) {
+    if (userAnswer === correctAnswer) {
         // إجابة صحيحة
         if (!group.classList.contains('solved')) {
             group.classList.add('solved');
@@ -208,37 +188,32 @@ function checkLevelCompletion() {
 
     // تحديث شريط التقدم داخل المرحلة
     const progressPercent = ((solvedCount / currentPuzzles.length) * 100);
-    const progressBar = document.getElementById('progress-bar');
-    if (progressBar) progressBar.style.width = `${progressPercent}%`;
+    document.getElementById('progress-bar').style.width = `${progressPercent}%`;
     
     // إذا اكتملت جميع الألغاز
     if (solvedCount === currentPuzzles.length) {
         setTimeout(() => {
             const victoryModal = document.getElementById('victory-modal');
-            if (victoryModal) victoryModal.classList.remove('hidden');
+            victoryModal.classList.remove('hidden');
         }, 500);
     }
 }
 
 function updateScoreUI() {
     const scoreEl = document.getElementById('score');
-    if (scoreEl) {
-        scoreEl.textContent = toArabicNumerals(currentScore);
-        scoreEl.style.color = 'var(--correct-green)';
-        setTimeout(() => scoreEl.style.color = 'var(--text-dark)', 500);
-    }
+    scoreEl.textContent = toArabicNumerals(currentScore);
+    scoreEl.style.color = 'var(--correct-green)'; // لون أخضر عند زيادة النقاط
+    setTimeout(() => scoreEl.style.color = 'var(--text-dark)', 500); // العودة للون الأصلي
 }
 
 function updateProgressBar() {
-    const progressBar = document.getElementById('progress-bar');
-    if (progressBar) progressBar.style.width = '0%';
+    document.getElementById('progress-bar').style.width = '0%';
 }
 
 function showFinalScreen() {
     const finalModal = document.getElementById('final-modal');
-    const finalScoreDisplay = document.getElementById('final-score-display');
-    if (finalScoreDisplay) finalScoreDisplay.textContent = toArabicNumerals(currentScore);
-    if (finalModal) finalModal.classList.remove('hidden');
+    document.getElementById('final-score-display').textContent = toArabicNumerals(currentScore);
+    finalModal.classList.remove('hidden');
 }
 
 // دالة مساعدة لتحويل الأرقام إلى عربية
