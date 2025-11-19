@@ -50,7 +50,7 @@ body {
     width: 100%;
     height: 100%;
     /* التأكد من استخدام الصورة A.png بدون أي لون فوقها */
-    background-image: url('A.png'); 
+    background-image: url('v.jpg'); 
     background-size: cover;
     background-position: center;
     z-index: -1; /* إبقاؤها خلف المحتوى */
