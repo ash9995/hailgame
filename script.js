@@ -40,153 +40,183 @@ const levels = [
     }
 ];
 
+// --- متغيرات الحالة العالمية ---
 let currentLevelIndex = 0;
 let currentScore = 0;
-const scorePerWord = 10;
 
+// تشغيل اللعبة عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
+    // *نقطة التفعيل الأساسية*: البدء بتحميل المرحلة الأولى هنا
     loadLevel(currentLevelIndex);
-
-    // زر الانتقال للمرحلة التالية
+    
+    // ربط زر الانتقال للمرحلة التالية
     document.getElementById('next-level-btn').addEventListener('click', () => {
+        // إخفاء النافذة المنبثقة
         document.getElementById('victory-modal').classList.add('hidden');
-        currentLevelIndex++;
         
+        // الانتقال للمرحلة التالية
+        currentLevelIndex++;
         if (currentLevelIndex < levels.length) {
             loadLevel(currentLevelIndex);
         } else {
+            // انتهت جميع المراحل
             showFinalScreen();
         }
     });
 });
 
+// وظيفة تحميل المرحلة
 function loadLevel(index) {
-    const gameArea = document.getElementById('game-area');
     const levelData = levels[index];
+    const gameArea = document.getElementById('game-area');
     
+    // تنظيف منطقة الألغاز
+    gameArea.innerHTML = '';
+
     // تحديث واجهة المستخدم
     document.getElementById('current-level').textContent = toArabicNumerals(index + 1);
     document.getElementById('level-title').textContent = levelData.title;
+
+    // تحديث إجمالي عدد المراحل في العنوان
+    const levelIndicator = document.querySelector('.level-indicator span:last-child');
+    if (levelIndicator) {
+        levelIndicator.textContent = toArabicNumerals(levels.length);
+    }
+    
     updateProgressBar();
-
-    // تنظيف المنطقة
-    gameArea.innerHTML = '';
-
-    // إنشاء الألغاز
-    levelData.puzzles.forEach((puzzle, pIndex) => {
-        const groupDiv = document.createElement('div');
-        groupDiv.className = 'word-group';
-        groupDiv.setAttribute('data-answer', puzzle.answer);
-        groupDiv.id = `puzzle-${pIndex}`;
-
-        // نص السؤال
-        const clueDiv = document.createElement('div');
-        clueDiv.className = 'clue';
-        clueDiv.textContent = puzzle.clue;
-        groupDiv.appendChild(clueDiv);
-
-        // مربعات الإدخال
-        const inputsDiv = document.createElement('div');
-        inputsDiv.className = 'inputs';
-        
-        // إنشاء المربعات بالترتيب الصحيح لـ RTL
-        for (let i = 0; i < puzzle.answer.length; i++) {
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.maxLength = 1;
-            input.className = 'cell';
-            input.dataset.index = i; // لتسهيل التتبع
-            inputsDiv.appendChild(input);
-        }
-        groupDiv.appendChild(inputsDiv);
-        gameArea.appendChild(groupDiv);
-
-        // تفعيل منطق اللعبة لهذا اللغز
-        attachLogicToGroup(groupDiv, puzzle.answer);
+    
+    // بناء الألغاز الجديدة
+    levelData.puzzles.forEach(puzzle => {
+        const group = createPuzzleGroup(puzzle.clue, puzzle.answer);
+        gameArea.appendChild(group);
     });
+
+    // إضافة منطق التفاعل للمربعات الجديدة
+    addPuzzleInteractionLogic();
 }
 
-function attachLogicToGroup(group, answer) {
-    const inputs = group.querySelectorAll('.cell');
+// دالة مساعدة لإنشاء مجموعة ألغاز HTML
+function createPuzzleGroup(clue, answer) {
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'word-group';
+    groupDiv.setAttribute('data-answer', answer);
+
+    const clueDiv = document.createElement('div');
+    clueDiv.className = 'clue';
+    clueDiv.textContent = clue;
     
-    inputs.forEach((input, index) => {
-        
-        // عند الكتابة
-        input.addEventListener('input', () => {
-            // الانتقال التلقائي للحقل التالي (لليمين في RTL)
-            if (input.value.length === 1) {
-                if (index < inputs.length - 1) { // إذا لم يكن الحقل الأخير
+    const inputsDiv = document.createElement('div');
+    inputsDiv.className = 'inputs';
+
+    // إنشاء مربعات الإدخال بعدد حروف الإجابة
+    for (let i = 0; i < answer.length; i++) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = '1';
+        input.className = 'cell';
+        inputsDiv.appendChild(input);
+    }
+
+    groupDiv.appendChild(clueDiv);
+    groupDiv.appendChild(inputsDiv);
+    return groupDiv;
+}
+
+// دالة تضيف المستمعات (Listeners) لجميع مربعات الألغاز
+function addPuzzleInteractionLogic() {
+    const wordGroups = document.querySelectorAll('.word-group');
+
+    wordGroups.forEach(group => {
+        const inputs = group.querySelectorAll('.cell');
+        const correctAnswer = group.getAttribute('data-answer');
+
+        inputs.forEach((input, index) => {
+            
+            // عند الكتابة في المربع
+            input.oninput = () => {
+                // تحويل الحرف المُدخل إلى حرف عربي وتأكيد حرف واحد
+                input.value = input.value.trim().charAt(0);
+                
+                // الانتقال للمربع التالي إذا تم الإدخال
+                if (input.value.length === 1 && index < inputs.length - 1) {
                     inputs[index + 1].focus();
                 }
-                checkOnePuzzle(group, inputs, answer);
-            }
-        });
 
-        // أزرار التحكم (مسح، أسهم)
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Backspace') {
-                if (input.value.length === 0 && index > 0) {
-                    inputs[index - 1].focus(); // الرجوع للحقل السابق
-                } else {
-                    input.value = ''; // مسح الحرف الحالي
+                // التحقق من الإجابة بعد كل إدخال
+                checkAnswer(group, inputs, correctAnswer);
+            };
+
+            // عند مسح الحرف (Backspace)
+            input.onkeydown = (e) => {
+                // نمسح الألوان لتشجيع المحاولة الجديدة
+                inputs.forEach(cell => {
+                    cell.classList.remove('correct', 'incorrect');
+                });
+                group.classList.remove('solved');
+
+                if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
+                    // يرجع للمربع اللي قبله
+                    e.preventDefault(); // منع الحذف الافتراضي بعد العودة
+                    inputs[index - 1].focus();
+                    inputs[index - 1].value = ''; // مسح قيمة المربع السابق
+                    
                 }
-                // إزالة حالات الألوان عند التعديل
-                inputs.forEach(cell => cell.classList.remove('correct', 'incorrect'));
-            }
-            
-            // التنقل بالأسهم (يمين ويسار)
-            if (e.key === 'ArrowLeft' && index < inputs.length - 1) { // السهم الأيسر ينتقل لليمين في RTL
-                inputs[index + 1].focus();
-                e.preventDefault(); // منع سلوك المتصفح الافتراضي
-            }
-            if (e.key === 'ArrowRight' && index > 0) { // السهم الأيمن ينتقل لليسار في RTL
-                inputs[index - 1].focus();
-                e.preventDefault(); // منع سلوك المتصفح الافتراضي
-            }
+            };
         });
-
-        input.addEventListener('focus', () => input.select());
     });
 }
 
-function checkOnePuzzle(group, inputs, correctAnswer) {
+// وظيفة التحقق من الإجابة
+function checkAnswer(group, inputs, correctAnswer) {
     let userAnswer = '';
-    let allFilled = true;
+    let allFilled = true; // نفترض أن كل المربعات مليانة
 
     inputs.forEach(input => {
-        userAnswer += input.value;
-        if (input.value === '') allFilled = false;
+        // نجمع الأحرف بعد إزالة المسافات
+        userAnswer += input.value.trim();
+        if (input.value.length === 0) {
+            allFilled = false; // لا، فيه مربع فاضي
+        }
     });
 
-    if (!allFilled) return;
+    // لا تتحقق إلا إذا عبأ المستخدم جميع المربعات
+    if (!allFilled) {
+        return; 
+    }
 
-    if (userAnswer === correctAnswer) {
-        // إجابة صحيحة
+    // المستخدم عبأ كل المربعات، نبدأ التصحيح
+    // للمقارنة الصحيحة: نقوم بتنظيف الإجابة الصحيحة من المسافات
+    const cleanedCorrectAnswer = correctAnswer.replace(/\s/g, '');
+    const cleanedUserAnswer = userAnswer.replace(/\s/g, '');
+
+
+    if (cleanedUserAnswer === cleanedCorrectAnswer) {
+        // الإجابة صحيحة (لون أخضر)
         if (!group.classList.contains('solved')) {
-            group.classList.add('solved');
-            inputs.forEach(input => {
-                input.classList.remove('incorrect');
-                input.classList.add('correct');
-                input.blur();
-                input.disabled = true; // قفل الإجابة الصحيحة
-            });
-            
-            // زيادة النقاط وتحديث الواجهة
-            currentScore += scorePerWord;
-            updateScoreUI();
-            
-            // التحقق من انتهاء المرحلة
-            checkLevelCompletion();
+             currentScore += 10; // زيادة النقاط مرة واحدة
+             updateScoreUI();
         }
+        inputs.forEach(input => {
+            input.classList.remove('incorrect');
+            input.classList.add('correct');
+            input.readOnly = true; // منع التعديل بعد الحل
+        });
+        group.classList.add('solved');
+        
+        // التحقق من اكتمال المرحلة
+        checkLevelCompletion();
+
     } else {
-        // إجابة خاطئة
+        // الإجابة خاطئة (لون أحمر)
         inputs.forEach(input => {
             input.classList.remove('correct');
             input.classList.add('incorrect');
         });
+        // لا نقلل النقاط، فقط نتركهم يحاولون مرة أخرى
     }
 }
 
+// دالة التحقق من اكتمال المرحلة الحالية
 function checkLevelCompletion() {
     const currentPuzzles = document.getElementById('game-area').children;
     let solvedCount = 0;
@@ -206,6 +236,12 @@ function checkLevelCompletion() {
         setTimeout(() => {
             const victoryModal = document.getElementById('victory-modal');
             victoryModal.classList.remove('hidden');
+            // تأكد من تحديث نص الزر إذا كانت هذه هي المرحلة الأخيرة
+            if (currentLevelIndex + 1 === levels.length) {
+                document.getElementById('next-level-btn').textContent = "إنهاء اللعبة";
+            } else {
+                document.getElementById('next-level-btn').textContent = "المرحلة التالية";
+            }
         }, 500);
     }
 }
@@ -213,11 +249,13 @@ function checkLevelCompletion() {
 function updateScoreUI() {
     const scoreEl = document.getElementById('score');
     scoreEl.textContent = toArabicNumerals(currentScore);
-    scoreEl.style.color = 'var(--correct-green)'; // لون أخضر عند زيادة النقاط
-    setTimeout(() => scoreEl.style.color = 'var(--text-dark)', 500); // العودة للون الأصلي
+    // تم تغيير اللون ليتوافق مع متغيرات CSS الجديدة
+    scoreEl.style.color = 'var(--correct-green)'; 
+    setTimeout(() => scoreEl.style.color = 'var(--text-dark)', 500); 
 }
 
 function updateProgressBar() {
+    // إعادة تعيين الشريط عند بدء مرحلة جديدة
     document.getElementById('progress-bar').style.width = '0%';
 }
 
@@ -225,9 +263,12 @@ function showFinalScreen() {
     const finalModal = document.getElementById('final-modal');
     document.getElementById('final-score-display').textContent = toArabicNumerals(currentScore);
     finalModal.classList.remove('hidden');
+    // إخفاء زر المرحلة التالية وتغيير نص الزر
+    document.getElementById('next-level-btn').style.display = 'none';
 }
 
 // دالة مساعدة لتحويل الأرقام إلى عربية
-function toArabicNumerals(n) {
-    return n.toString().replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+function toArabicNumerals(num) {
+    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    return String(num).split('').map(digit => arabicDigits[digit]).join('');
 }
