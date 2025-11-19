@@ -3,53 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لغز حائل الثقافي</title>
+    <title>تحدي حائل الثقافي</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- الخلفية ستكون في CSS لسهولة التحكم -->
-    <div class="background-image"></div>
+    <!-- الخلفية ستكون في CSS لسهولة التحكم --><div class="background-image"></div>
 
     <div class="puzzle-container">
         
-        <!-- Game Header: Level & Score -->
-        <div class="game-header">
+        <!-- Game Header: Level & Score --><div class="game-header">
             <div class="level-indicator">
-                <span>المرحلة: <span id="current-level">١</span> / ٣</span>
+                <!-- تم تحديث عدد المراحل الكلي ليصبح ٦ (سيتم تحديثه في JS تلقائياً) -->
+                <span>المرحلة: <span id="current-level">١</span> / ٦</span>
             </div>
             <div class="score-box">
                 النقاط: <span id="score">٠</span>
             </div>
         </div>
 
-        <!-- Progress Bar -->
-        <div class="progress-container">
+        <!-- Progress Bar --><div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
+
         
-        <!-- إزالة العنوان الرئيسي والوصف بناءً على طلبك -->
-        <p class="subtitle" id="level-title">اكتشف كنوز حـــائـــل وتراثها العريق</p>
+        <!-- العنوان الجديد مكان الشعار القديم --><h1 id="main-title">تحدي حائل الثقافي</h1>
+        <p class="subtitle" id="level-title">اكتشف كنوز المنطقة وتراثها العريق</p>
 
-        <!-- Dynamic Game Area -->
-        <div id="game-area" class="puzzle-grid">
-            <!-- Puzzles will be injected here by JavaScript -->
-        </div>
+        <!-- Dynamic Game Area --><div id="game-area" class="puzzle-grid">
+            <!-- Puzzles will be injected here by JavaScript --></div>
 
-        <!-- Victory Modal (Hidden by default) -->
-        <div id="victory-modal" class="modal hidden">
+        <!-- Victory Modal (Hidden by default) --><div id="victory-modal" class="modal hidden">
             <div class="modal-content">
-                <h2>كفو!</h2>
+                <h2>كفو! 🎉</h2>
                 <p>أجبت على جميع الأسئلة بشكل صحيح.</p>
                 <div class="stars">⭐⭐⭐</div>
                 <button id="next-level-btn" class="btn-hail">المرحلة التالية</button>
             </div>
         </div>
 
-        <!-- Game Over / Final Win Modal -->
-        <div id="final-modal" class="modal hidden">
+        <!-- Game Over / Final Win Modal --><div id="final-modal" class="modal hidden">
             <div class="modal-content">
                 <h2>يا بعد حيي! ❤️</h2>
-                <p>زادت ثقافتك وتعرفت على تراثنا.</p>
+                <p>ختمت اللعبة وتعرفت على تراثنا.</p>
                 <div class="final-score">مجموع النقاط: <span id="final-score-display">0</span></div>
                 <button onclick="location.reload()" class="btn-hail">العب مرة أخرى</button>
             </div>
