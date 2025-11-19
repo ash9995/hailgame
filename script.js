@@ -41,219 +41,200 @@ const levels = [
 ];
 
 
-// --- متغيرات الحالة العامة ---
+
+// --- المتغيرات العامة ---
 let currentLevelIndex = 0;
 let currentScore = 0;
-let gameStarted = false; // لم نعد نحتاجها بسبب التحديث ولكن نحافظ عليها كتأمين
 
-// --- وظائف مساعدة ---
+// --- التشغيل الأساسي (Main Execution) ---
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("Game Loaded");
+    initGame();
+});
 
-// دالة مساعدة لتحويل الأرقام إلى عربية
-function toArabicNumerals(number) {
-    const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-    return String(number).replace(/[0-9]/g, (d) => arabic[d]);
+function initGame() {
+    // تحميل المرحلة الأولى
+    loadLevel(currentLevelIndex);
+
+    // إعداد زر المرحلة التالية
+    const nextBtn = document.getElementById('next-level-btn');
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            document.getElementById('victory-modal').classList.add('hidden');
+            currentLevelIndex++;
+            
+            if (currentLevelIndex < levels.length) {
+                loadLevel(currentLevelIndex);
+            } else {
+                showFinalScreen();
+            }
+        });
+    }
 }
 
-// دالة لإنشاء مجموعات الألغاز ديناميكياً
-function createPuzzleGroup(puzzle) {
+// --- دالة تحميل المرحلة ---
+function loadLevel(index) {
+    const gameArea = document.getElementById('game-area');
+    if (!gameArea) {
+        console.error("عنصر game-area غير موجود!");
+        return;
+    }
+
+    const levelData = levels[index];
+    
+    // تنظيف المنطقة
+    gameArea.innerHTML = '';
+
+    // تحديث النصوص
+    document.getElementById('current-level').textContent = toArabicNumerals(index + 1);
+    document.getElementById('level-title').textContent = levelData.title;
+    
+    // تحديث شريط التقدم (تصفيره)
+    document.getElementById('progress-bar').style.width = '0%';
+
+    // إنشاء الألغاز
+    levelData.puzzles.forEach((puzzle, idx) => {
+        const group = createPuzzleElement(puzzle, idx);
+        gameArea.appendChild(group);
+    });
+}
+
+// --- دالة إنشاء عنصر اللغز HTML ---
+function createPuzzleElement(puzzle, idx) {
     const group = document.createElement('div');
-    group.classList.add('word-group');
+    group.className = 'word-group';
     group.setAttribute('data-answer', puzzle.answer);
+    group.id = `puzzle-${idx}`;
 
+    // السؤال
     const clue = document.createElement('div');
-    clue.classList.add('clue');
+    clue.className = 'clue';
     clue.textContent = puzzle.clue;
+    group.appendChild(clue);
 
+    // المربعات
     const inputs = document.createElement('div');
-    inputs.classList.add('inputs');
+    inputs.className = 'inputs';
 
     for (let i = 0; i < puzzle.answer.length; i++) {
         const input = document.createElement('input');
         input.type = 'text';
         input.maxLength = '1';
-        input.classList.add('cell');
+        input.className = 'cell';
+        
+        // إضافة منطق التفاعل مباشرة
+        addInputLogic(input, i, puzzle.answer.length, group, puzzle.answer);
+        
         inputs.appendChild(input);
     }
 
-    group.appendChild(clue);
     group.appendChild(inputs);
     return group;
 }
 
-// وظيفة التحقق من الإجابة
-function checkAnswer(group, inputs, correctAnswer) {
+// --- دالة إضافة منطق التفاعل لكل مربع ---
+function addInputLogic(input, index, totalLength, group, correctAnswer) {
+    // عند الكتابة
+    input.addEventListener('input', (e) => {
+        if (input.value.length === 1) {
+            // الانتقال للمربع التالي
+            const nextInput = group.querySelectorAll('.cell')[index + 1];
+            if (nextInput) nextInput.focus();
+            
+            // التحقق من الحل
+            checkAnswer(group, correctAnswer);
+        }
+    });
+
+    // عند المسح أو الأسهم
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && input.value.length === 0) {
+            const prevInput = group.querySelectorAll('.cell')[index - 1];
+            if (prevInput) prevInput.focus();
+        }
+        
+        // مسح حالة الخطأ/الصحة عند التعديل
+        if (!group.classList.contains('solved')) {
+            group.querySelectorAll('.cell').forEach(c => {
+                c.classList.remove('correct', 'incorrect');
+            });
+        }
+    });
+}
+
+// --- دالة التحقق من الإجابة ---
+function checkAnswer(group, correctAnswer) {
+    const inputs = group.querySelectorAll('.cell');
     let userAnswer = '';
     let allFilled = true;
-    let scoreGained = false;
 
-    // لا تتحقق إذا كانت الإجابة محلولة سابقاً
-    if (group.classList.contains('solved')) {
-        return;
-    }
-
-    inputs.forEach(input => {
-        // نستخدم toLowerCase للتحقق لتجاهل حالة الأحرف (في حال استخدام أحرف لاتينية)
-        // ونزيل المسافات
-        userAnswer += input.value.trim();
-        if (input.value.length === 0) {
-            allFilled = false;
-        }
+    inputs.forEach(inp => {
+        userAnswer += inp.value.trim();
+        if (inp.value.trim() === '') allFilled = false;
     });
 
-    // لا تتحقق إلا إذا عبأ المستخدم جميع المربعات
-    if (!allFilled) {
-        return;
-    }
+    if (!allFilled) return;
 
-    // المستخدم عبأ كل المربعات، نبدأ التصحيح
-    // نحول الإجابة الصحيحة أيضاً لإزالة المسافات وتوحيد حالة الأحرف للتحقق الدقيق
-    const cleanedUserAnswer = userAnswer.toLowerCase();
-    const cleanedCorrectAnswer = correctAnswer.toLowerCase();
+    // تنظيف النصوص للمقارنة
+    const cleanUser = userAnswer.replace(/\s/g, '');
+    const cleanCorrect = correctAnswer.replace(/\s/g, '');
 
-    if (cleanedUserAnswer === cleanedCorrectAnswer) {
-        // الإجابة صحيحة (لون أخضر)
+    if (cleanUser === cleanCorrect) {
+        // إجابة صحيحة
+        if (!group.classList.contains('solved')) {
+            currentScore += 10;
+            updateScoreUI();
+        }
+        
         group.classList.add('solved');
-        inputs.forEach(input => {
-            input.classList.remove('incorrect');
-            input.classList.add('correct');
-            input.disabled = true; // نوقف الإدخال بعد الحل الصحيح
+        inputs.forEach(inp => {
+            inp.classList.remove('incorrect');
+            inp.classList.add('correct');
+            inp.readOnly = true; // قفل المربع
         });
 
-        // زيادة النقاط
-        currentScore += 10;
-        updateScoreUI();
-        scoreGained = true;
-
-    } else {
-        // الإجابة خاطئة (لون أحمر)
-        inputs.forEach(input => {
-            input.classList.remove('correct');
-            input.classList.add('incorrect');
-        });
-    }
-
-    // التحقق من اكتمال المرحلة بعد كل محاولة
-    if (scoreGained) {
         checkLevelCompletion();
+    } else {
+        // إجابة خاطئة
+        inputs.forEach(inp => {
+            inp.classList.add('incorrect');
+        });
     }
 }
 
-// وظيفة ربط الأحداث بمربعات الإدخال
-function setupInputEvents(group) {
-    const inputs = group.querySelectorAll('.cell');
-    const correctAnswer = group.getAttribute('data-answer');
-
-    inputs.forEach((input, index) => {
-
-        // عند الكتابة في المربع
-        input.addEventListener('input', (e) => {
-            // إذا كتب حرف، ينتقل للمربع التالي
-            if (input.value.length === 1 && index < inputs.length - 1) {
-                inputs[index + 1].focus();
-            }
-
-            // بعد ما يخلص كتابة، نشيك على الإجابة
-            checkAnswer(group, inputs, correctAnswer);
-        });
-
-        // عند مسح الحرف (Backspace)
-        input.addEventListener('keydown', (e) => {
-            // نسمح بإعادة المحاولة (نمسح الألوان)
-            if (!group.classList.contains('solved')) {
-                inputs.forEach(cell => {
-                    cell.classList.remove('correct', 'incorrect');
-                });
-            }
-            
-            if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
-                // يرجع للمربع اللي قبله
-                inputs[index - 1].focus();
-            }
-        });
-    });
-}
-
-// وظيفة تحميل المرحلة
-function loadLevel(levelIndex) {
-    if (levelIndex >= levels.length) {
-        showFinalScreen();
-        return;
-    }
-
-    currentLevelIndex = levelIndex;
-    const level = levels[currentLevelIndex];
-
-    // تحديث عناوين المرحلة
-    document.getElementById('current-level').textContent = toArabicNumerals(currentLevelIndex + 1);
-    document.getElementById('level-title').textContent = level.title;
-
-    // مسح الألغاز القديمة
-    const gameArea = document.getElementById('game-area');
-    gameArea.innerHTML = '';
-
-    // إضافة الألغاز الجديدة
-    level.puzzles.forEach(puzzle => {
-        const group = createPuzzleGroup(puzzle);
-        gameArea.appendChild(group);
-        setupInputEvents(group); // ربط الأحداث بكل مجموعة جديدة
-    });
-
-    updateProgressBar(); // تهيئة شريط التقدم
-}
-
-// وظيفة التحقق من اكتمال المرحلة
+// --- دالة التحقق من اكتمال المرحلة ---
 function checkLevelCompletion() {
-    const currentPuzzles = document.getElementById('game-area').children;
-    let solvedCount = 0;
+    const totalPuzzles = document.querySelectorAll('.word-group').length;
+    const solvedPuzzles = document.querySelectorAll('.word-group.solved').length;
 
-    for (let group of currentPuzzles) {
-        if (group.classList.contains('solved')) {
-            solvedCount++;
-        }
-    }
+    // تحديث الشريط
+    const percent = (solvedPuzzles / totalPuzzles) * 100;
+    document.getElementById('progress-bar').style.width = `${percent}%`;
 
-    // تحديث شريط التقدم داخل المرحلة
-    const progressPercent = ((solvedCount / currentPuzzles.length) * 100);
-    document.getElementById('progress-bar').style.width = `${progressPercent}%`;
-
-    // إذا اكتملت جميع الألغاز
-    if (solvedCount === currentPuzzles.length) {
-        // إظهار نافذة الانتصار
+    if (solvedPuzzles === totalPuzzles) {
         setTimeout(() => {
-            const victoryModal = document.getElementById('victory-modal');
-            victoryModal.classList.remove('hidden');
+            document.getElementById('victory-modal').classList.remove('hidden');
+            
+            // تحديث نص الزر في المرحلة الأخيرة
+            if (currentLevelIndex + 1 === levels.length) {
+                document.getElementById('next-level-btn').textContent = "إنهاء اللعبة";
+            } else {
+                document.getElementById('next-level-btn').textContent = "المرحلة التالية";
+            }
         }, 500);
     }
 }
 
+// --- دوال مساعدة ---
 function updateScoreUI() {
-    const scoreEl = document.getElementById('score');
-    scoreEl.textContent = toArabicNumerals(currentScore);
-    scoreEl.style.color = 'var(--correct-green)'; // لون أخضر عند زيادة النقاط
-    setTimeout(() => scoreEl.style.color = 'var(--text-dark)', 500); // العودة للون الأصلي
-}
-
-function updateProgressBar() {
-    // إعادة تعيين الشريط عند بدء مرحلة جديدة
-    document.getElementById('progress-bar').style.width = '0%';
+    document.getElementById('score').textContent = toArabicNumerals(currentScore);
 }
 
 function showFinalScreen() {
-    const finalModal = document.getElementById('final-modal');
     document.getElementById('final-score-display').textContent = toArabicNumerals(currentScore);
-    finalModal.classList.remove('hidden');
+    document.getElementById('final-modal').classList.remove('hidden');
 }
 
-// --- تهيئة اللعبة ---
-document.addEventListener('DOMContentLoaded', () => {
-
-    // ربط زر المرحلة التالية
-    const nextLevelBtn = document.getElementById('next-level-btn');
-    nextLevelBtn.addEventListener('click', () => {
-        document.getElementById('victory-modal').classList.add('hidden');
-        loadLevel(currentLevelIndex + 1);
-    });
-    
-    // *** التعديل المهم هنا: نبدأ تحميل المرحلة 1 تلقائياً ***
-    loadLevel(0);
-});
+function toArabicNumerals(n) {
+    return n.toString().replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+}
