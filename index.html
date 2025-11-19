@@ -3,53 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحدي حائل الثقافي</title>
+    <title>لغز حائل الثقافي</title>
     <link rel="stylesheet" href="style.css">
-    <!-- خطوط مساعدة -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- الخلفية -->
+    <!-- الخلفية ستكون في CSS لسهولة التحكم -->
     <div class="background-image"></div>
 
     <div class="puzzle-container">
         
-        <!-- رأس اللعبة -->
+        <!-- Game Header: Level & Score -->
         <div class="game-header">
             <div class="level-indicator">
-                <span>المرحلة: <span id="current-level">١</span> / ٤</span>
+                <span>المرحلة: <span id="current-level">١</span> / ٣</span>
             </div>
             <div class="score-box">
                 النقاط: <span id="score">٠</span>
             </div>
         </div>
 
-        <!-- شريط التقدم -->
+        <!-- Progress Bar -->
         <div class="progress-container">
             <div class="progress-bar" id="progress-bar"></div>
         </div>
+        
+        <!-- إزالة العنوان الرئيسي والوصف بناءً على طلبك -->
+        <p class="subtitle" id="level-title">اكتشف كنوز حـــائـــل وتراثها العريق</p>
 
-        <!-- العناوين -->
-        <h1 id="main-title">تحدي بيوت الثقافة</h1>
-        <p class="subtitle" id="level-title">المرحلة ١: معالم حائل التاريخية</p>
+        <!-- Dynamic Game Area -->
+        <div id="game-area" class="puzzle-grid">
+            <!-- Puzzles will be injected here by JavaScript -->
+        </div>
 
-        <!-- منطقة اللعب (يجب أن تكون فارغة ليتم تعبئتها بالجافاسكريبت) -->
-        <div id="game-area" class="puzzle-grid"></div>
-
-        <!-- نوافذ الفوز والنهاية -->
+        <!-- Victory Modal (Hidden by default) -->
         <div id="victory-modal" class="modal hidden">
             <div class="modal-content">
-                <h2>كفو! 🎉</h2>
-                <p>بيض الله وجهك، إجاباتك صحيحة.</p>
+                <h2>كفو!</h2>
+                <p>أجبت على جميع الأسئلة بشكل صحيح.</p>
                 <div class="stars">⭐⭐⭐</div>
                 <button id="next-level-btn" class="btn-hail">المرحلة التالية</button>
             </div>
         </div>
 
+        <!-- Game Over / Final Win Modal -->
         <div id="final-modal" class="modal hidden">
             <div class="modal-content">
                 <h2>يا بعد حيي! ❤️</h2>
-                <p>ختمت اللعبة وتعرفت على تراثنا ومراكزنا.</p>
+                <p>زادت ثقافتك وتعرفت على تراثنا.</p>
                 <div class="final-score">مجموع النقاط: <span id="final-score-display">0</span></div>
                 <button onclick="location.reload()" class="btn-hail">العب مرة أخرى</button>
             </div>
