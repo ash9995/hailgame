@@ -1,4 +1,4 @@
-// --- بيانات المراحل (Data) ---
+// --- بيانات المراحل ---
 const levels = [
     {
         title: "المرحلة ١: معالم حائل التاريخية",
@@ -27,33 +27,26 @@ const levels = [
             { answer: "فيد", clue: "٤. مدينة تاريخية قديمة تقع على طريق الحج (٣ حروف)" }
         ]
     },
-    {
+    { // المرحلة الرابعة: دور بيوت الثقافة
         title: "المرحلة ٤: دور بيوت الثقافة",
         puzzles: [
             { answer: "مواهب", clue: "١. الهدف الأهم للمراكز الثقافية هو اكتشاف وصقل ... الشباب (٥ حروف)" },
             { answer: "ورشة", clue: "٢. طريقة تدريب عملية قصيرة ومكثفة لتعليم مهارة جديدة (٤ حروف)" },
-            { answer: "أطفال", clue: "٣. الفئة العمرية التي تُخصص لها برامج لتنمية الخيال والمهارات الحركية (٥ حروف)" },
-            { answer: "تراث", clue: "٤. ما تحافظ عليه المراكز الثقافية من عادات وفنون الماضي (٤ حروف)" },
+            { answer: "أطفال", clue: "٣. الفئة العمرية التي تُخصص لها برامج لتنمية الخيال والمهارات الحركية (٥ حروف)" }, // تمت إضافة الفاصلة هنا
+            { answer: "تراث", clue: "٤. ما تحافظ عليه المراكز الثقافية من عادات وفنون الماضي (٤ حروف)" }, // تمت إضافة الفاصلة هنا
             { answer: "السياحة", clue: "٥. بيوت الثقافة تسهم في تعزيز .... لجذب الزوار الأجانب والمحليين (٧ حروف)" }
         ]
     }
 ];
 
-// --- المتغيرات العامة ---
 let currentLevelIndex = 0;
 let currentScore = 0;
+const scorePerWord = 10;
 
-// --- التشغيل الأساسي (Main Execution) ---
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("Game Loaded");
-    initGame();
-});
-
-function initGame() {
-    // تحميل المرحلة الأولى فوراً
     loadLevel(currentLevelIndex);
 
-    // إعداد زر المرحلة التالية
+    // زر الانتقال للمرحلة التالية
     const nextBtn = document.getElementById('next-level-btn');
     if (nextBtn) {
         nextBtn.addEventListener('click', () => {
@@ -67,168 +60,188 @@ function initGame() {
             }
         });
     }
-}
+});
 
-// --- دالة تحميل المرحلة ---
 function loadLevel(index) {
     const gameArea = document.getElementById('game-area');
     if (!gameArea) return;
 
     const levelData = levels[index];
     
+    // تحديث واجهة المستخدم
+    const currentLevelEl = document.getElementById('current-level');
+    const levelTitleEl = document.getElementById('level-title');
+    
+    if (currentLevelEl) currentLevelEl.textContent = toArabicNumerals(index + 1);
+    if (levelTitleEl) levelTitleEl.textContent = levelData.title;
+    
+    updateProgressBar();
+
     // تنظيف المنطقة
     gameArea.innerHTML = '';
 
-    // تحديث النصوص
-    document.getElementById('current-level').textContent = toArabicNumerals(index + 1);
-    document.getElementById('level-title').textContent = levelData.title;
-    
-    // تحديث شريط التقدم (تصفيره)
-    document.getElementById('progress-bar').style.width = '0%';
-
     // إنشاء الألغاز
-    levelData.puzzles.forEach((puzzle, idx) => {
-        const group = createPuzzleElement(puzzle, idx);
-        gameArea.appendChild(group);
+    levelData.puzzles.forEach((puzzle, pIndex) => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'word-group';
+        groupDiv.setAttribute('data-answer', puzzle.answer);
+        groupDiv.id = `puzzle-${pIndex}`;
+
+        // نص السؤال
+        const clueDiv = document.createElement('div');
+        clueDiv.className = 'clue';
+        clueDiv.textContent = puzzle.clue;
+        groupDiv.appendChild(clueDiv);
+
+        // مربعات الإدخال
+        const inputsDiv = document.createElement('div');
+        inputsDiv.className = 'inputs';
+        
+        // إنشاء المربعات بالترتيب الصحيح لـ RTL
+        for (let i = 0; i < puzzle.answer.length; i++) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.maxLength = 1;
+            input.className = 'cell';
+            input.dataset.index = i; // لتسهيل التتبع
+            inputsDiv.appendChild(input);
+        }
+        groupDiv.appendChild(inputsDiv);
+        gameArea.appendChild(groupDiv);
+
+        // تفعيل منطق اللعبة لهذا اللغز
+        attachLogicToGroup(groupDiv, puzzle.answer);
     });
 }
 
-// --- دالة إنشاء عنصر اللغز HTML ---
-function createPuzzleElement(puzzle, idx) {
-    const group = document.createElement('div');
-    group.className = 'word-group';
-    group.setAttribute('data-answer', puzzle.answer);
-    group.id = `puzzle-${idx}`;
-
-    // السؤال
-    const clue = document.createElement('div');
-    clue.className = 'clue';
-    clue.textContent = puzzle.clue;
-    group.appendChild(clue);
-
-    // المربعات
-    const inputs = document.createElement('div');
-    inputs.className = 'inputs';
-
-    for (let i = 0; i < puzzle.answer.length; i++) {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.maxLength = '1';
-        input.className = 'cell';
-        
-        // إضافة منطق التفاعل مباشرة
-        addInputLogic(input, i, puzzle.answer.length, group, puzzle.answer);
-        
-        inputs.appendChild(input);
-    }
-
-    group.appendChild(inputs);
-    return group;
-}
-
-// --- دالة إضافة منطق التفاعل لكل مربع ---
-function addInputLogic(input, index, totalLength, group, correctAnswer) {
-    // عند الكتابة
-    input.addEventListener('input', (e) => {
-        if (input.value.length === 1) {
-            // الانتقال للمربع التالي
-            const nextInput = group.querySelectorAll('.cell')[index + 1];
-            if (nextInput) nextInput.focus();
-            
-            // التحقق من الحل
-            checkAnswer(group, correctAnswer);
-        }
-    });
-
-    // عند المسح أو الأسهم
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && input.value.length === 0) {
-            const prevInput = group.querySelectorAll('.cell')[index - 1];
-            if (prevInput) prevInput.focus();
-        }
-        
-        // مسح حالة الخطأ/الصحة عند التعديل
-        if (!group.classList.contains('solved')) {
-            group.querySelectorAll('.cell').forEach(c => {
-                c.classList.remove('correct', 'incorrect');
-            });
-        }
-    });
-}
-
-// --- دالة التحقق من الإجابة ---
-function checkAnswer(group, correctAnswer) {
+function attachLogicToGroup(group, answer) {
     const inputs = group.querySelectorAll('.cell');
+    
+    inputs.forEach((input, index) => {
+        
+        // عند الكتابة
+        input.addEventListener('input', () => {
+            // الانتقال التلقائي للحقل التالي (لليمين في RTL)
+            if (input.value.length === 1) {
+                if (index < inputs.length - 1) { // إذا لم يكن الحقل الأخير
+                    inputs[index + 1].focus();
+                }
+                checkOnePuzzle(group, inputs, answer);
+            }
+        });
+
+        // أزرار التحكم (مسح، أسهم)
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace') {
+                if (input.value.length === 0 && index > 0) {
+                    inputs[index - 1].focus(); // الرجوع للحقل السابق
+                } else {
+                    input.value = ''; // مسح الحرف الحالي
+                }
+                // إزالة حالات الألوان عند التعديل
+                inputs.forEach(cell => cell.classList.remove('correct', 'incorrect'));
+            }
+            
+            // التنقل بالأسهم
+            if (e.key === 'ArrowLeft' && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+                e.preventDefault();
+            }
+            if (e.key === 'ArrowRight' && index > 0) {
+                inputs[index - 1].focus();
+                e.preventDefault();
+            }
+        });
+
+        input.addEventListener('focus', () => input.select());
+    });
+}
+
+function checkOnePuzzle(group, inputs, correctAnswer) {
     let userAnswer = '';
     let allFilled = true;
 
-    inputs.forEach(inp => {
-        userAnswer += inp.value.trim();
-        if (inp.value.trim() === '') allFilled = false;
+    inputs.forEach(input => {
+        userAnswer += input.value;
+        if (input.value === '') allFilled = false;
     });
 
     if (!allFilled) return;
 
     // تنظيف النصوص للمقارنة
-    const cleanUser = userAnswer.replace(/\s/g, '');
-    const cleanCorrect = correctAnswer.replace(/\s/g, '');
-
-    if (cleanUser === cleanCorrect) {
+    if (userAnswer.replace(/\s/g, '') === correctAnswer.replace(/\s/g, '')) {
         // إجابة صحيحة
         if (!group.classList.contains('solved')) {
-            currentScore += 10;
+            group.classList.add('solved');
+            inputs.forEach(input => {
+                input.classList.remove('incorrect');
+                input.classList.add('correct');
+                input.blur();
+                input.disabled = true; // قفل الإجابة الصحيحة
+            });
+            
+            // زيادة النقاط وتحديث الواجهة
+            currentScore += scorePerWord;
             updateScoreUI();
+            
+            // التحقق من انتهاء المرحلة
+            checkLevelCompletion();
         }
-        
-        group.classList.add('solved');
-        inputs.forEach(inp => {
-            inp.classList.remove('incorrect');
-            inp.classList.add('correct');
-            inp.readOnly = true; // قفل المربع
-        });
-
-        checkLevelCompletion();
     } else {
         // إجابة خاطئة
-        inputs.forEach(inp => {
-            inp.classList.add('incorrect');
+        inputs.forEach(input => {
+            input.classList.remove('correct');
+            input.classList.add('incorrect');
         });
     }
 }
 
-// --- دالة التحقق من اكتمال المرحلة ---
 function checkLevelCompletion() {
-    const totalPuzzles = document.querySelectorAll('.word-group').length;
-    const solvedPuzzles = document.querySelectorAll('.word-group.solved').length;
+    const currentPuzzles = document.getElementById('game-area').children;
+    let solvedCount = 0;
 
-    // تحديث الشريط
-    const percent = (solvedPuzzles / totalPuzzles) * 100;
-    document.getElementById('progress-bar').style.width = `${percent}%`;
+    for (let group of currentPuzzles) {
+        if (group.classList.contains('solved')) {
+            solvedCount++;
+        }
+    }
 
-    if (solvedPuzzles === totalPuzzles) {
+    // تحديث شريط التقدم داخل المرحلة
+    const progressPercent = ((solvedCount / currentPuzzles.length) * 100);
+    const progressBar = document.getElementById('progress-bar');
+    if (progressBar) progressBar.style.width = `${progressPercent}%`;
+    
+    // إذا اكتملت جميع الألغاز
+    if (solvedCount === currentPuzzles.length) {
         setTimeout(() => {
-            document.getElementById('victory-modal').classList.remove('hidden');
-            
-            // تحديث نص الزر في المرحلة الأخيرة
-            if (currentLevelIndex + 1 === levels.length) {
-                document.getElementById('next-level-btn').textContent = "إنهاء اللعبة";
-            } else {
-                document.getElementById('next-level-btn').textContent = "المرحلة التالية";
-            }
+            const victoryModal = document.getElementById('victory-modal');
+            if (victoryModal) victoryModal.classList.remove('hidden');
         }, 500);
     }
 }
 
-// --- دوال مساعدة ---
 function updateScoreUI() {
-    document.getElementById('score').textContent = toArabicNumerals(currentScore);
+    const scoreEl = document.getElementById('score');
+    if (scoreEl) {
+        scoreEl.textContent = toArabicNumerals(currentScore);
+        scoreEl.style.color = 'var(--correct-green)';
+        setTimeout(() => scoreEl.style.color = 'var(--text-dark)', 500);
+    }
+}
+
+function updateProgressBar() {
+    const progressBar = document.getElementById('progress-bar');
+    if (progressBar) progressBar.style.width = '0%';
 }
 
 function showFinalScreen() {
-    document.getElementById('final-score-display').textContent = toArabicNumerals(currentScore);
-    document.getElementById('final-modal').classList.remove('hidden');
+    const finalModal = document.getElementById('final-modal');
+    const finalScoreDisplay = document.getElementById('final-score-display');
+    if (finalScoreDisplay) finalScoreDisplay.textContent = toArabicNumerals(currentScore);
+    if (finalModal) finalModal.classList.remove('hidden');
 }
 
+// دالة مساعدة لتحويل الأرقام إلى عربية
 function toArabicNumerals(n) {
     return n.toString().replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
 }
