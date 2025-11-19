@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تحدي حائل الثقافي</title>
     <link rel="stylesheet" href="style.css">
+    <!-- استخدام خطوط Google (مثل Tajawal) إذا لم يكن الخط المحلي متوفراً -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- الخلفية ستكون في CSS لسهولة التحكم --><div class="background-image"></div>
-
+    
     <div class="puzzle-container">
         
         <!-- Game Header: Level & Score --><div class="game-header">
             <div class="level-indicator">
-                <!-- تم تحديث عدد المراحل الكلي ليصبح ٦ (سيتم تحديثه في JS تلقائياً) -->
+                <!-- تم تحديث عدد المراحل الكلي ليصبح ٦ -->
                 <span>المرحلة: <span id="current-level">١</span> / ٦</span>
             </div>
             <div class="score-box">
@@ -26,13 +27,17 @@
         </div>
 
         
-        <!-- العنوان الجديد مكان الشعار القديم --><h1 id="main-title">تحدي حائل الثقافي</h1>
-        <p class="subtitle" id="level-title">اكتشف كنوز المنطقة وتراثها العريق</p>
+        <!-- العنوان الرئيسي وعنوان المرحلة -->
+        <h1 id="main-title">تحدي بيوت الثقافة</h1>
+        <p class="subtitle" id="level-title">المرحلة ١: معالم حائل التاريخية</p>
 
-        <!-- Dynamic Game Area --><div id="game-area" class="puzzle-grid">
-            <!-- Puzzles will be injected here by JavaScript --></div>
+        <!-- Dynamic Game Area (هنا سيتم حقن الألغاز بواسطة JavaScript) --><div id="game-area" class="puzzle-grid">
+            <!-- Puzzles will be injected here by JavaScript -->
+            <!-- هذا القسم كان يحتوي على الألغاز المكتوبة يدوياً وتمت إزالتها -->
+        </div>
 
-        <!-- Victory Modal (Hidden by default) --><div id="victory-modal" class="modal hidden">
+        <!-- Victory Modal (Hidden by default) -->
+        <div id="victory-modal" class="modal hidden">
             <div class="modal-content">
                 <h2>كفو! 🎉</h2>
                 <p>أجبت على جميع الأسئلة بشكل صحيح.</p>
@@ -41,7 +46,8 @@
             </div>
         </div>
 
-        <!-- Game Over / Final Win Modal --><div id="final-modal" class="modal hidden">
+        <!-- Game Over / Final Win Modal -->
+        <div id="final-modal" class="modal hidden">
             <div class="modal-content">
                 <h2>يا بعد حيي! ❤️</h2>
                 <p>ختمت اللعبة وتعرفت على تراثنا.</p>
