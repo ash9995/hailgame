@@ -40,171 +40,89 @@ const levels = [
     }
 ];
 
-// --- متغيرات الحالة العالمية ---
+
+// --- متغيرات الحالة العامة ---
 let currentLevelIndex = 0;
 let currentScore = 0;
+let gameStarted = false; // لم نعد نحتاجها بسبب التحديث ولكن نحافظ عليها كتأمين
 
-// تشغيل اللعبة عند تحميل الصفحة
-document.addEventListener('DOMContentLoaded', () => {
-    // *نقطة التفعيل الأساسية*: البدء بتحميل المرحلة الأولى هنا
-    loadLevel(currentLevelIndex);
-    
-    // ربط زر الانتقال للمرحلة التالية
-    document.getElementById('next-level-btn').addEventListener('click', () => {
-        // إخفاء النافذة المنبثقة
-        document.getElementById('victory-modal').classList.add('hidden');
-        
-        // الانتقال للمرحلة التالية
-        currentLevelIndex++;
-        if (currentLevelIndex < levels.length) {
-            loadLevel(currentLevelIndex);
-        } else {
-            // انتهت جميع المراحل
-            showFinalScreen();
-        }
-    });
-});
+// --- وظائف مساعدة ---
 
-// وظيفة تحميل المرحلة
-function loadLevel(index) {
-    const levelData = levels[index];
-    const gameArea = document.getElementById('game-area');
-    
-    // تنظيف منطقة الألغاز
-    gameArea.innerHTML = '';
-
-    // تحديث واجهة المستخدم
-    document.getElementById('current-level').textContent = toArabicNumerals(index + 1);
-    document.getElementById('level-title').textContent = levelData.title;
-
-    // تحديث إجمالي عدد المراحل في العنوان
-    const levelIndicator = document.querySelector('.level-indicator span:last-child');
-    if (levelIndicator) {
-        levelIndicator.textContent = toArabicNumerals(levels.length);
-    }
-    
-    updateProgressBar();
-    
-    // بناء الألغاز الجديدة
-    levelData.puzzles.forEach(puzzle => {
-        const group = createPuzzleGroup(puzzle.clue, puzzle.answer);
-        gameArea.appendChild(group);
-    });
-
-    // إضافة منطق التفاعل للمربعات الجديدة
-    addPuzzleInteractionLogic();
+// دالة مساعدة لتحويل الأرقام إلى عربية
+function toArabicNumerals(number) {
+    const arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+    return String(number).replace(/[0-9]/g, (d) => arabic[d]);
 }
 
-// دالة مساعدة لإنشاء مجموعة ألغاز HTML
-function createPuzzleGroup(clue, answer) {
-    const groupDiv = document.createElement('div');
-    groupDiv.className = 'word-group';
-    groupDiv.setAttribute('data-answer', answer);
+// دالة لإنشاء مجموعات الألغاز ديناميكياً
+function createPuzzleGroup(puzzle) {
+    const group = document.createElement('div');
+    group.classList.add('word-group');
+    group.setAttribute('data-answer', puzzle.answer);
 
-    const clueDiv = document.createElement('div');
-    clueDiv.className = 'clue';
-    clueDiv.textContent = clue;
-    
-    const inputsDiv = document.createElement('div');
-    inputsDiv.className = 'inputs';
+    const clue = document.createElement('div');
+    clue.classList.add('clue');
+    clue.textContent = puzzle.clue;
 
-    // إنشاء مربعات الإدخال بعدد حروف الإجابة
-    for (let i = 0; i < answer.length; i++) {
+    const inputs = document.createElement('div');
+    inputs.classList.add('inputs');
+
+    for (let i = 0; i < puzzle.answer.length; i++) {
         const input = document.createElement('input');
         input.type = 'text';
         input.maxLength = '1';
-        input.className = 'cell';
-        inputsDiv.appendChild(input);
+        input.classList.add('cell');
+        inputs.appendChild(input);
     }
 
-    groupDiv.appendChild(clueDiv);
-    groupDiv.appendChild(inputsDiv);
-    return groupDiv;
-}
-
-// دالة تضيف المستمعات (Listeners) لجميع مربعات الألغاز
-function addPuzzleInteractionLogic() {
-    const wordGroups = document.querySelectorAll('.word-group');
-
-    wordGroups.forEach(group => {
-        const inputs = group.querySelectorAll('.cell');
-        const correctAnswer = group.getAttribute('data-answer');
-
-        inputs.forEach((input, index) => {
-            
-            // عند الكتابة في المربع
-            input.oninput = () => {
-                // تحويل الحرف المُدخل إلى حرف عربي وتأكيد حرف واحد
-                input.value = input.value.trim().charAt(0);
-                
-                // الانتقال للمربع التالي إذا تم الإدخال
-                if (input.value.length === 1 && index < inputs.length - 1) {
-                    inputs[index + 1].focus();
-                }
-
-                // التحقق من الإجابة بعد كل إدخال
-                checkAnswer(group, inputs, correctAnswer);
-            };
-
-            // عند مسح الحرف (Backspace)
-            input.onkeydown = (e) => {
-                // نمسح الألوان لتشجيع المحاولة الجديدة
-                inputs.forEach(cell => {
-                    cell.classList.remove('correct', 'incorrect');
-                });
-                group.classList.remove('solved');
-
-                if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
-                    // يرجع للمربع اللي قبله
-                    e.preventDefault(); // منع الحذف الافتراضي بعد العودة
-                    inputs[index - 1].focus();
-                    inputs[index - 1].value = ''; // مسح قيمة المربع السابق
-                    
-                }
-            };
-        });
-    });
+    group.appendChild(clue);
+    group.appendChild(inputs);
+    return group;
 }
 
 // وظيفة التحقق من الإجابة
 function checkAnswer(group, inputs, correctAnswer) {
     let userAnswer = '';
-    let allFilled = true; // نفترض أن كل المربعات مليانة
+    let allFilled = true;
+    let scoreGained = false;
+
+    // لا تتحقق إذا كانت الإجابة محلولة سابقاً
+    if (group.classList.contains('solved')) {
+        return;
+    }
 
     inputs.forEach(input => {
-        // نجمع الأحرف بعد إزالة المسافات
+        // نستخدم toLowerCase للتحقق لتجاهل حالة الأحرف (في حال استخدام أحرف لاتينية)
+        // ونزيل المسافات
         userAnswer += input.value.trim();
         if (input.value.length === 0) {
-            allFilled = false; // لا، فيه مربع فاضي
+            allFilled = false;
         }
     });
 
     // لا تتحقق إلا إذا عبأ المستخدم جميع المربعات
     if (!allFilled) {
-        return; 
+        return;
     }
 
     // المستخدم عبأ كل المربعات، نبدأ التصحيح
-    // للمقارنة الصحيحة: نقوم بتنظيف الإجابة الصحيحة من المسافات
-    const cleanedCorrectAnswer = correctAnswer.replace(/\s/g, '');
-    const cleanedUserAnswer = userAnswer.replace(/\s/g, '');
-
+    // نحول الإجابة الصحيحة أيضاً لإزالة المسافات وتوحيد حالة الأحرف للتحقق الدقيق
+    const cleanedUserAnswer = userAnswer.toLowerCase();
+    const cleanedCorrectAnswer = correctAnswer.toLowerCase();
 
     if (cleanedUserAnswer === cleanedCorrectAnswer) {
         // الإجابة صحيحة (لون أخضر)
-        if (!group.classList.contains('solved')) {
-             currentScore += 10; // زيادة النقاط مرة واحدة
-             updateScoreUI();
-        }
+        group.classList.add('solved');
         inputs.forEach(input => {
             input.classList.remove('incorrect');
             input.classList.add('correct');
-            input.readOnly = true; // منع التعديل بعد الحل
+            input.disabled = true; // نوقف الإدخال بعد الحل الصحيح
         });
-        group.classList.add('solved');
-        
-        // التحقق من اكتمال المرحلة
-        checkLevelCompletion();
+
+        // زيادة النقاط
+        currentScore += 10;
+        updateScoreUI();
+        scoreGained = true;
 
     } else {
         // الإجابة خاطئة (لون أحمر)
@@ -212,11 +130,78 @@ function checkAnswer(group, inputs, correctAnswer) {
             input.classList.remove('correct');
             input.classList.add('incorrect');
         });
-        // لا نقلل النقاط، فقط نتركهم يحاولون مرة أخرى
+    }
+
+    // التحقق من اكتمال المرحلة بعد كل محاولة
+    if (scoreGained) {
+        checkLevelCompletion();
     }
 }
 
-// دالة التحقق من اكتمال المرحلة الحالية
+// وظيفة ربط الأحداث بمربعات الإدخال
+function setupInputEvents(group) {
+    const inputs = group.querySelectorAll('.cell');
+    const correctAnswer = group.getAttribute('data-answer');
+
+    inputs.forEach((input, index) => {
+
+        // عند الكتابة في المربع
+        input.addEventListener('input', (e) => {
+            // إذا كتب حرف، ينتقل للمربع التالي
+            if (input.value.length === 1 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+
+            // بعد ما يخلص كتابة، نشيك على الإجابة
+            checkAnswer(group, inputs, correctAnswer);
+        });
+
+        // عند مسح الحرف (Backspace)
+        input.addEventListener('keydown', (e) => {
+            // نسمح بإعادة المحاولة (نمسح الألوان)
+            if (!group.classList.contains('solved')) {
+                inputs.forEach(cell => {
+                    cell.classList.remove('correct', 'incorrect');
+                });
+            }
+            
+            if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
+                // يرجع للمربع اللي قبله
+                inputs[index - 1].focus();
+            }
+        });
+    });
+}
+
+// وظيفة تحميل المرحلة
+function loadLevel(levelIndex) {
+    if (levelIndex >= levels.length) {
+        showFinalScreen();
+        return;
+    }
+
+    currentLevelIndex = levelIndex;
+    const level = levels[currentLevelIndex];
+
+    // تحديث عناوين المرحلة
+    document.getElementById('current-level').textContent = toArabicNumerals(currentLevelIndex + 1);
+    document.getElementById('level-title').textContent = level.title;
+
+    // مسح الألغاز القديمة
+    const gameArea = document.getElementById('game-area');
+    gameArea.innerHTML = '';
+
+    // إضافة الألغاز الجديدة
+    level.puzzles.forEach(puzzle => {
+        const group = createPuzzleGroup(puzzle);
+        gameArea.appendChild(group);
+        setupInputEvents(group); // ربط الأحداث بكل مجموعة جديدة
+    });
+
+    updateProgressBar(); // تهيئة شريط التقدم
+}
+
+// وظيفة التحقق من اكتمال المرحلة
 function checkLevelCompletion() {
     const currentPuzzles = document.getElementById('game-area').children;
     let solvedCount = 0;
@@ -230,18 +215,13 @@ function checkLevelCompletion() {
     // تحديث شريط التقدم داخل المرحلة
     const progressPercent = ((solvedCount / currentPuzzles.length) * 100);
     document.getElementById('progress-bar').style.width = `${progressPercent}%`;
-    
+
     // إذا اكتملت جميع الألغاز
     if (solvedCount === currentPuzzles.length) {
+        // إظهار نافذة الانتصار
         setTimeout(() => {
             const victoryModal = document.getElementById('victory-modal');
             victoryModal.classList.remove('hidden');
-            // تأكد من تحديث نص الزر إذا كانت هذه هي المرحلة الأخيرة
-            if (currentLevelIndex + 1 === levels.length) {
-                document.getElementById('next-level-btn').textContent = "إنهاء اللعبة";
-            } else {
-                document.getElementById('next-level-btn').textContent = "المرحلة التالية";
-            }
         }, 500);
     }
 }
@@ -249,9 +229,8 @@ function checkLevelCompletion() {
 function updateScoreUI() {
     const scoreEl = document.getElementById('score');
     scoreEl.textContent = toArabicNumerals(currentScore);
-    // تم تغيير اللون ليتوافق مع متغيرات CSS الجديدة
-    scoreEl.style.color = 'var(--correct-green)'; 
-    setTimeout(() => scoreEl.style.color = 'var(--text-dark)', 500); 
+    scoreEl.style.color = 'var(--correct-green)'; // لون أخضر عند زيادة النقاط
+    setTimeout(() => scoreEl.style.color = 'var(--text-dark)', 500); // العودة للون الأصلي
 }
 
 function updateProgressBar() {
@@ -263,12 +242,18 @@ function showFinalScreen() {
     const finalModal = document.getElementById('final-modal');
     document.getElementById('final-score-display').textContent = toArabicNumerals(currentScore);
     finalModal.classList.remove('hidden');
-    // إخفاء زر المرحلة التالية وتغيير نص الزر
-    document.getElementById('next-level-btn').style.display = 'none';
 }
 
-// دالة مساعدة لتحويل الأرقام إلى عربية
-function toArabicNumerals(num) {
-    const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-    return String(num).split('').map(digit => arabicDigits[digit]).join('');
-}
+// --- تهيئة اللعبة ---
+document.addEventListener('DOMContentLoaded', () => {
+
+    // ربط زر المرحلة التالية
+    const nextLevelBtn = document.getElementById('next-level-btn');
+    nextLevelBtn.addEventListener('click', () => {
+        document.getElementById('victory-modal').classList.add('hidden');
+        loadLevel(currentLevelIndex + 1);
+    });
+    
+    // *** التعديل المهم هنا: نبدأ تحميل المرحلة 1 تلقائياً ***
+    loadLevel(0);
+});
