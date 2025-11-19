@@ -66,7 +66,7 @@ body {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     text-align: center;
     border: 3px solid var(--ui-border-color); /* إطار حول الحاوية */
-     transform: translate(17%); /* لتوسيط مبدئي */
+     transform: translate(10%); /* لتوسيط مبدئي */
 }
 
 /* --- رأس اللعبة والنتيجة --- */
