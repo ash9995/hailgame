@@ -1,237 +1,232 @@
-// --- بيانات المراحل (قصص الأطفال) ---
+// --- بيانات المراحل ---
 const levels = [
     {
-        title: "المرحلة ١: أبطال الحكايات",
+        title: "المرحلة ١: معالم حائل التاريخية",
         puzzles: [
-            { answer: "ليلى", clue: "١. الفتاة التي زارت جدتها في الغابة وحاورها الذئب (٤ حروف)" },
-            { answer: "علاء", clue: "٢. الشاب الذي وجد المصباح السحري وطار بالبساط (٤ حروف)" },
-            { answer: "سندريلا", clue: "٣. الأميرة التي فقدت حذاءها الزجاجي قبل منتصف الليل (٧ حروف)" },
-            { answer: "طرزان", clue: "٤. عاش في الغابة وربته الغوريلات وأصبح صديق الحيوانات (٥ حروف)" }
+            { answer: "القشلة", clue: "١. قصر تاريخي شهير في وسط مدينة حائل (٦ حروف)" },
+            { answer: "اعيرف", clue: "٢. قلعة وجبل يطل على حائل (٥ حروف)" },
+            { answer: "حاتم", clue: "٣. رمز الكرم العربي الذي ارتبط اسمه بحائل (٤ حروف)" },
+            { answer: "جبة", clue: "٤. مدينة تاريخية تشتهر بالنقوش (٣ حروف)" }
         ]
     },
     {
-        title: "المرحلة ٢: حيوانات القصص",
+        title: "المرحلة ٢: طبيعة وجغرافيا حائل",
         puzzles: [
-            { answer: "سيمبا", clue: "١. الشبل الصغير الذي أصبح ملك الغابة في فيلم الأسد الملك (٥ حروف)" },
-            { answer: "نيمو", clue: "٢. السمكة الصغيرة الملونة التي ضاعت في المحيط (٤ حروف)" },
-            { answer: "جيري", clue: "٣. الفأر الذكي الذي يهرب دائماً من القط توم (٤ حروف)" },
-            { answer: "بطوط", clue: "٤. البطة العصبية والمضحكة التي ترتدي ملابس البحارة (٤ حروف)" }
+            { answer: "اجا", clue: "١. سلسلة جبال شهيرة في حائل، شقيقة سلمى (٣ حروف)" },
+            { answer: "سلمى", clue: "٢. سلسلة جبال أخرى ترتبط بقصة حب أسطورية (٤ حروف)" },
+            { answer: "النفود", clue: "٣. صحراء رملية ذهبية كبيرة تحيط بحائل (٦ حروف)" },
+            { answer: "عقدة", clue: "٤. منطقة زراعية وسياحية داخل الجبال (٤ حروف)" }
         ]
     },
     {
-        title: "المرحلة ٣: أدوات سحرية",
+        title: "المرحلة ٣: تراث وكرم حائل",
         puzzles: [
-            { answer: "مصباح", clue: "١. الشيء القديم الذي خرج منه الجني الأزرق (٥ حروف)" },
-            { answer: "بساط", clue: "٢. وسيلة النقل الطائرة التي استخدمها علاء الدين (٤ حروف)" },
-            { answer: "عصا", clue: "٣. الأداة التي تستخدمها الجنيات لإلقاء التعاويذ السحرية (٣ حروف)" },
-            { answer: "مرآة", clue: "٤. سألتها الملكة الشريرة: من هي أجمل امرأة في البلاد؟ (٤ حروف)" }
+            { answer: "كبيبة", clue: "١. أكلة حائلية شهيرة تُعمل بورق العنب (٥ حروف)" },
+            { answer: "دلة", clue: "٢. رمز للضيافة وتقديم القهوة (٣ حروف)" },
+            { answer: "برزان", clue: "٣. قصر وحي تاريخي قديم في حائل (٥ حروف)" },
+            { answer: "فيد", clue: "٤. مدينة تاريخية قديمة تقع على طريق الحج (٣ حروف)" }
         ]
     },
-    {
-        title: "المرحلة ٤: قيم ودروس",
+    { // المرحلة الرابعة
+        title: "المرحلة ٤: دور بيوت الثقافة",
         puzzles: [
-            { answer: "الصدق", clue: "١. الصفة التي نجت الراعي في النهاية، وعكسها الكذب (٥ حروف)" },
-            { answer: "التعاون", clue: "٢. سر نجاح النمل والنحل في العمل وبناء بيوتهم (٧ حروف)" },
-            { answer: "الصبر", clue: "٣. مفتاح الفرج، وصفة تعلمناها من قصص الأنبياء (٥ حروف)" },
-            { answer: "القراءة", clue: "٤. مفتاح المعرفة وأول كلمة نزلت في القرآن (٧ حروف)" }
+            { answer: "مواهب", clue: "١. الهدف الأهم للمراكز الثقافية هو اكتشاف وصقل ... الشباب (٥ حروف)" },
+            { answer: "ورشة", clue: "٢. طريقة تدريب عملية قصيرة ومكثفة لتعليم مهارة جديدة (٤ حروف)" },
+            { answer: "أطفال", clue: "٣. الفئة العمرية التي تُخصص لها برامج لتنمية الخيال والمهارات الحركية (٥ حروف)" }, // تمت إضافة الفاصلة هنا
+            { answer: "تراث", clue: "٤. ما تحافظ عليه المراكز الثقافية من عادات وفنون الماضي (٤ حروف)" }, // تمت إضافة الفاصلة هنا
+            { answer: "السياحة", clue: "٥. بيوت الثقافة تسهم في تعزيز .... لجذب الزوار الأجانب والمحليين (٧ حروف)" }
         ]
     }
 ];
 
-// --- المتغيرات العامة ---
 let currentLevelIndex = 0;
 let currentScore = 0;
 const scorePerWord = 10;
 
-// --- التشغيل الأساسي ---
 document.addEventListener('DOMContentLoaded', () => {
-    initGame();
-});
-
-function initGame() {
     loadLevel(currentLevelIndex);
 
-    const nextBtn = document.getElementById('next-level-btn');
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            document.getElementById('victory-modal').classList.add('hidden');
-            currentLevelIndex++;
-            
-            if (currentLevelIndex < levels.length) {
-                loadLevel(currentLevelIndex);
-            } else {
-                showFinalScreen();
-            }
-        });
-    }
-}
+    // زر الانتقال للمرحلة التالية
+    document.getElementById('next-level-btn').addEventListener('click', () => {
+        document.getElementById('victory-modal').classList.add('hidden');
+        currentLevelIndex++;
+        
+        if (currentLevelIndex < levels.length) {
+            loadLevel(currentLevelIndex);
+        } else {
+            showFinalScreen();
+        }
+    });
+});
 
-// --- دالة تحميل المرحلة ---
 function loadLevel(index) {
     const gameArea = document.getElementById('game-area');
-    if (!gameArea) return;
-
     const levelData = levels[index];
     
+    // تحديث واجهة المستخدم
+    document.getElementById('current-level').textContent = toArabicNumerals(index + 1);
+    document.getElementById('level-title').textContent = levelData.title;
+    updateProgressBar();
+
     // تنظيف المنطقة
     gameArea.innerHTML = '';
 
-    // تحديث النصوص
-    const currentLevelEl = document.getElementById('current-level');
-    const levelTitleEl = document.getElementById('level-title');
-    
-    if (currentLevelEl) {
-        // تحديث رقم المرحلة والعدد الكلي
-        const levelIndicator = currentLevelEl.parentElement;
-        levelIndicator.innerHTML = `المرحلة: <span id="current-level">${toArabicNumerals(index + 1)}</span> / ${toArabicNumerals(levels.length)}`;
-    }
-    
-    if (levelTitleEl) levelTitleEl.textContent = levelData.title;
-    
-    // تحديث شريط التقدم
-    document.getElementById('progress-bar').style.width = '0%';
-
     // إنشاء الألغاز
-    levelData.puzzles.forEach((puzzle, idx) => {
-        const group = createPuzzleElement(puzzle, idx);
-        gameArea.appendChild(group);
+    levelData.puzzles.forEach((puzzle, pIndex) => {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'word-group';
+        groupDiv.setAttribute('data-answer', puzzle.answer);
+        groupDiv.id = `puzzle-${pIndex}`;
+
+        // نص السؤال
+        const clueDiv = document.createElement('div');
+        clueDiv.className = 'clue';
+        clueDiv.textContent = puzzle.clue;
+        groupDiv.appendChild(clueDiv);
+
+        // مربعات الإدخال
+        const inputsDiv = document.createElement('div');
+        inputsDiv.className = 'inputs';
+        
+        // إنشاء المربعات بالترتيب الصحيح لـ RTL
+        for (let i = 0; i < puzzle.answer.length; i++) {
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.maxLength = 1;
+            input.className = 'cell';
+            input.dataset.index = i; // لتسهيل التتبع
+            inputsDiv.appendChild(input);
+        }
+        groupDiv.appendChild(inputsDiv);
+        gameArea.appendChild(groupDiv);
+
+        // تفعيل منطق اللعبة لهذا اللغز
+        attachLogicToGroup(groupDiv, puzzle.answer);
     });
 }
 
-// --- دالة إنشاء عنصر اللغز HTML ---
-function createPuzzleElement(puzzle, idx) {
-    const group = document.createElement('div');
-    group.className = 'word-group';
-    group.setAttribute('data-answer', puzzle.answer);
-    group.id = `puzzle-${idx}`;
-
-    const clue = document.createElement('div');
-    clue.className = 'clue';
-    clue.textContent = puzzle.clue;
-    group.appendChild(clue);
-
-    const inputs = document.createElement('div');
-    inputs.className = 'inputs';
-
-    for (let i = 0; i < puzzle.answer.length; i++) {
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.maxLength = '1';
-        input.className = 'cell';
-        
-        addInputLogic(input, i, puzzle.answer.length, group, puzzle.answer);
-        
-        inputs.appendChild(input);
-    }
-
-    group.appendChild(inputs);
-    return group;
-}
-
-// --- دالة إضافة منطق التفاعل ---
-function addInputLogic(input, index, totalLength, group, correctAnswer) {
-    input.addEventListener('input', (e) => {
-        if (input.value.length === 1) {
-            const nextInput = group.querySelectorAll('.cell')[index + 1];
-            if (nextInput) nextInput.focus();
-            checkAnswer(group, correctAnswer);
-        }
-    });
-
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && input.value.length === 0) {
-            const prevInput = group.querySelectorAll('.cell')[index - 1];
-            if (prevInput) prevInput.focus();
-        }
-        
-        if (!group.classList.contains('solved')) {
-            group.querySelectorAll('.cell').forEach(c => {
-                c.classList.remove('correct', 'incorrect');
-            });
-        }
-    });
-    
-    // تحديد النص عند التركيز لسهولة التعديل
-    input.addEventListener('focus', () => input.select());
-}
-
-// --- دالة التحقق من الإجابة ---
-function checkAnswer(group, correctAnswer) {
+function attachLogicToGroup(group, answer) {
     const inputs = group.querySelectorAll('.cell');
+    
+    inputs.forEach((input, index) => {
+        
+        // عند الكتابة
+        input.addEventListener('input', () => {
+            // الانتقال التلقائي للحقل التالي (لليمين في RTL)
+            if (input.value.length === 1) {
+                if (index < inputs.length - 1) { // إذا لم يكن الحقل الأخير
+                    inputs[index + 1].focus();
+                }
+                checkOnePuzzle(group, inputs, answer);
+            }
+        });
+
+        // أزرار التحكم (مسح، أسهم)
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace') {
+                if (input.value.length === 0 && index > 0) {
+                    inputs[index - 1].focus(); // الرجوع للحقل السابق
+                } else {
+                    input.value = ''; // مسح الحرف الحالي
+                }
+                // إزالة حالات الألوان عند التعديل
+                inputs.forEach(cell => cell.classList.remove('correct', 'incorrect'));
+            }
+            
+            // التنقل بالأسهم (يمين ويسار)
+            if (e.key === 'ArrowLeft' && index < inputs.length - 1) { // السهم الأيسر ينتقل لليمين في RTL
+                inputs[index + 1].focus();
+                e.preventDefault(); // منع سلوك المتصفح الافتراضي
+            }
+            if (e.key === 'ArrowRight' && index > 0) { // السهم الأيمن ينتقل لليسار في RTL
+                inputs[index - 1].focus();
+                e.preventDefault(); // منع سلوك المتصفح الافتراضي
+            }
+        });
+
+        input.addEventListener('focus', () => input.select());
+    });
+}
+
+function checkOnePuzzle(group, inputs, correctAnswer) {
     let userAnswer = '';
     let allFilled = true;
 
-    inputs.forEach(inp => {
-        userAnswer += inp.value.trim();
-        if (inp.value.trim() === '') allFilled = false;
+    inputs.forEach(input => {
+        userAnswer += input.value;
+        if (input.value === '') allFilled = false;
     });
 
     if (!allFilled) return;
 
-    // تنظيف النصوص للمقارنة (إزالة المسافات وتوحيد الهمزات إن لزم)
-    const cleanUser = userAnswer.replace(/\s/g, '');
-    const cleanCorrect = correctAnswer.replace(/\s/g, '');
-
-    if (cleanUser === cleanCorrect) {
+    if (userAnswer === correctAnswer) {
+        // إجابة صحيحة
         if (!group.classList.contains('solved')) {
+            group.classList.add('solved');
+            inputs.forEach(input => {
+                input.classList.remove('incorrect');
+                input.classList.add('correct');
+                input.blur();
+                input.disabled = true; // قفل الإجابة الصحيحة
+            });
+            
+            // زيادة النقاط وتحديث الواجهة
             currentScore += scorePerWord;
             updateScoreUI();
+            
+            // التحقق من انتهاء المرحلة
+            checkLevelCompletion();
         }
-        
-        group.classList.add('solved');
-        inputs.forEach(inp => {
-            inp.classList.remove('incorrect');
-            inp.classList.add('correct');
-            inp.readOnly = true;
-        });
-
-        checkLevelCompletion();
     } else {
-        inputs.forEach(inp => {
-            inp.classList.add('incorrect');
+        // إجابة خاطئة
+        inputs.forEach(input => {
+            input.classList.remove('correct');
+            input.classList.add('incorrect');
         });
     }
 }
 
-// --- دالة التحقق من اكتمال المرحلة ---
 function checkLevelCompletion() {
-    const totalPuzzles = document.querySelectorAll('.word-group').length;
-    const solvedPuzzles = document.querySelectorAll('.word-group.solved').length;
+    const currentPuzzles = document.getElementById('game-area').children;
+    let solvedCount = 0;
 
-    const percent = (solvedPuzzles / totalPuzzles) * 100;
-    document.getElementById('progress-bar').style.width = `${percent}%`;
+    for (let group of currentPuzzles) {
+        if (group.classList.contains('solved')) {
+            solvedCount++;
+        }
+    }
 
-    if (solvedPuzzles === totalPuzzles) {
+    // تحديث شريط التقدم داخل المرحلة
+    const progressPercent = ((solvedCount / currentPuzzles.length) * 100);
+    document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+    
+    // إذا اكتملت جميع الألغاز
+    if (solvedCount === currentPuzzles.length) {
         setTimeout(() => {
             const victoryModal = document.getElementById('victory-modal');
             victoryModal.classList.remove('hidden');
-            
-            if (currentLevelIndex + 1 === levels.length) {
-                document.getElementById('next-level-btn').textContent = "إنهاء اللعبة";
-            } else {
-                document.getElementById('next-level-btn').textContent = "المرحلة التالية";
-            }
         }, 500);
     }
 }
 
-// --- دوال مساعدة ---
 function updateScoreUI() {
     const scoreEl = document.getElementById('score');
-    if (scoreEl) {
-        scoreEl.textContent = toArabicNumerals(currentScore);
-        scoreEl.style.color = 'var(--correct-green)';
-        setTimeout(() => scoreEl.style.color = 'var(--text-dark)', 500);
-    }
+    scoreEl.textContent = toArabicNumerals(currentScore);
+    scoreEl.style.color = 'var(--correct-green)'; // لون أخضر عند زيادة النقاط
+    setTimeout(() => scoreEl.style.color = 'var(--text-dark)', 500); // العودة للون الأصلي
+}
+
+function updateProgressBar() {
+    document.getElementById('progress-bar').style.width = '0%';
 }
 
 function showFinalScreen() {
     const finalModal = document.getElementById('final-modal');
-    const finalScoreDisplay = document.getElementById('final-score-display');
-    if (finalScoreDisplay) finalScoreDisplay.textContent = toArabicNumerals(currentScore);
-    if (finalModal) finalModal.classList.remove('hidden');
+    document.getElementById('final-score-display').textContent = toArabicNumerals(currentScore);
+    finalModal.classList.remove('hidden');
 }
 
+// دالة مساعدة لتحويل الأرقام إلى عربية
 function toArabicNumerals(n) {
     return n.toString().replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
 }
